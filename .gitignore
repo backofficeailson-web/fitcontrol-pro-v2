@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.production
+.env.development
+*.zip
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+.DS_Store
+.vscode/
+npm-debug.log*
+backend/src/database/data.json

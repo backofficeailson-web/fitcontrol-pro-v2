@@ -1,0 +1,2 @@
+const protocolos=['Powerlifting','Bench Press / Supino competitivo','Beach Tennis','Bodybuilding masculino','Bodybuilding feminino','CrossFit','Futebol','Saúde / patologias'];
+export default function Protocolos(){return <><h2>Protocolos</h2><div className="grid cards">{protocolos.map(p=><div className="card" key={p}><strong>{p}</strong><small>Preset disponível para IA de regras</small></div>)}</div></>}

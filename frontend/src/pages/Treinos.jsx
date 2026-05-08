@@ -1,0 +1,2 @@
+import { useEffect, useState } from 'react'; import { Link } from 'react-router-dom'; import { api } from '../services/api';
+export default function Treinos(){ const [items,setItems]=useState([]); useEffect(()=>{api('/treinos').then(setItems)},[]); return <><div className="title"><h2>Treinos</h2><Link className="button" to="/treinos/novo">Novo treino</Link></div><div className="table">{items.map(t=><Link key={t.id} to={`/treinos/${t.id}`}><b>{t.nome||t.objetivo}</b><span>{t.modalidade}</span><span className="badge">{t.geradoPorIA?'IA':'manual'}</span></Link>)}</div></> }
