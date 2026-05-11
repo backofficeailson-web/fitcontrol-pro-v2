@@ -1,0 +1,1 @@
+const express=require('express'); const auth=require('../middlewares/auth'); const calc=require('../utils/calculos'); const {ok}=require('../utils/apiResponse'); const router=express.Router(); router.use(auth); router.post('/preview',(req,res)=>ok(res,calc.indicadores(req.body.avaliacao||req.body,req.body.aluno||{}))); module.exports=router;

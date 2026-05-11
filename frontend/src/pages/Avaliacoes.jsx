@@ -1,0 +1,2 @@
+import { useEffect, useState } from 'react'; import { Link } from 'react-router-dom'; import { api } from '../services/api';
+export default function Avaliacoes(){ const [items,setItems]=useState([]); useEffect(()=>{api('/avaliacoes').then(setItems)},[]); return <><div className="title"><h2>Avaliações</h2><Link className="button" to="/avaliacoes/nova">Nova avaliação</Link></div><div className="table">{items.map(a=><Link key={a.id} to={`/avaliacoes/${a.id}`}><b>{a.data||a.createdAt?.slice(0,10)}</b><span>Peso: {a.peso||'-'} kg</span></Link>)}</div></> }

@@ -1,0 +1,10 @@
+const express=require('express'); const db=require('../database/db'); const auth=require('../middlewares/auth'); const {ok,fail}=require('../utils/apiResponse'); const {montarEvolucao}=require('../services/evolucao.service'); const router=express.Router(); router.use(auth);
+router.get('/',(req,res)=>ok(res,db.list('alunos')));
+router.get('/:alunoId/avaliacoes',(req,res)=>ok(res,db.list('avaliacoes').filter(a=>a.alunoId===req.params.alunoId)));
+router.get('/:alunoId/avaliacoes/comparativo',(req,res)=>{ const aluno=db.get('alunos',req.params.alunoId); if(!aluno) return fail(res,404,'Aluno não encontrado'); ok(res,montarEvolucao(aluno,db.list('avaliacoes').filter(a=>a.alunoId===aluno.id)).comparativo); });
+router.get('/:alunoId/evolucao',(req,res)=>{ const aluno=db.get('alunos',req.params.alunoId); if(!aluno) return fail(res,404,'Aluno não encontrado'); ok(res,montarEvolucao(aluno,db.list('avaliacoes').filter(a=>a.alunoId===aluno.id))); });
+router.get('/:id',(req,res)=>{ const item=db.get('alunos',req.params.id); return item?ok(res,item):fail(res,404,'Aluno não encontrado'); });
+router.post('/',(req,res)=>{ if(!req.body.nome) return fail(res,400,'Nome é obrigatório'); ok(res,db.create('alunos',{...req.body,userId:req.user.id}),'Aluno criado'); });
+router.put('/:id',(req,res)=>{ const item=db.update('alunos',req.params.id,req.body); return item?ok(res,item,'Aluno atualizado'):fail(res,404,'Aluno não encontrado'); });
+router.delete('/:id',(req,res)=> db.remove('alunos',req.params.id)?ok(res,true,'Aluno excluído'):fail(res,404,'Aluno não encontrado'));
+module.exports=router;

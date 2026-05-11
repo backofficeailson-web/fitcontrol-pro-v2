@@ -1,62 +1,42 @@
-# FitControl Pro V2 Enterprise
+# FitControl Pro 2.0
 
-Sistema SaaS fitness premium em Flask/Python com autenticação, alunos, avaliações físicas, treinos, motor de treino por regras, relatórios em PDF, UI dark/glassmorphism, PWA e deploy real.
-
-Branding preservado: **since 2018 Ailson Soares**.
+Projeto recriado do zero com arquitetura limpa: React + Vite no frontend e Node.js + Express no backend.
 
 ## Rodar localmente
 
+### Backend
 ```bash
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# Linux/Mac
-source .venv/bin/activate
-
-pip install -r requirements.txt
-cp .env.example .env
-flask db upgrade
-python app.py
+cd backend
+copy .env.example .env
+npm install
+npm run dev
 ```
 
-Acesse: `http://127.0.0.1:5000/auth/login`.
-
-## Rodar com Gunicorn
-
+### Frontend
 ```bash
-gunicorn --bind 0.0.0.0:8000 --workers 2 --threads 4 --timeout 120 wsgi:app
+cd frontend
+copy .env.example .env
+npm install
+npm run dev
 ```
 
-## Rodar com Docker
+Frontend: http://localhost:5173  
+Backend: http://localhost:4000
 
-```bash
-docker compose up --build
-```
+## Usuário inicial
+Crie um usuário em `/register`.
 
-## Produção
+## Módulos
+- Autenticação JWT
+- Dashboard
+- Alunos
+- Avaliações físicas
+- Motor de cálculos
+- Treinos
+- IA inicial por regras para geração de treinos
+- Evolução
+- Relatórios
+- Backup/exportação/importação JSON
 
-Use PostgreSQL e Redis. Consulte `docs/DEPLOY.md`.
-
-## Validação rápida
-
-```bash
-pytest -q
-flask db upgrade
-flask --app wsgi:app routes
-```
-
-## Estrutura principal
-
-```text
-app/                  arquitetura-alvo modular
-models/               modelos SQLAlchemy atuais
-repositories/         queries isoladas por domínio
-services/             regras de negócio
-routes/               blueprints Flask
-schemas/              WTForms
-static/               CSS, JS, PWA, uploads
-templates/            Jinja2 + PDFs
-migrations/           Alembic/Flask-Migrate
-tests/                suíte automatizada
-docker/ scripts/ docs/
-```
+## GitHub
+Não subir `.env`, `node_modules`, `dist`, banco local ou ZIPs.

@@ -1,0 +1,10 @@
+const express=require('express'); const db=require('../database/db'); const auth=require('../middlewares/auth'); const calc=require('../utils/calculos'); const {montarEvolucao}=require('../services/evolucao.service'); const {ok,fail}=require('../utils/apiResponse'); const router=express.Router(); router.use(auth);
+router.get('/',(req,res)=>ok(res,db.list('avaliacoes')));
+router.get('/:id',(req,res)=>{ const av=db.get('avaliacoes',req.params.id); if(!av) return fail(res,404,'Avaliação não encontrada'); const aluno=db.get('alunos',av.alunoId)||{}; ok(res,{...av,calculos:calc.indicadores(av,aluno)}); });
+router.post('/',(req,res)=>{ if(!req.body.alunoId) return fail(res,400,'Aluno é obrigatório'); ok(res,db.create('avaliacoes',req.body),'Avaliação criada'); });
+router.put('/:id',(req,res)=>{ const item=db.update('avaliacoes',req.params.id,req.body); return item?ok(res,item,'Avaliação atualizada'):fail(res,404,'Avaliação não encontrada'); });
+router.delete('/:id',(req,res)=> db.remove('avaliacoes',req.params.id)?ok(res,true,'Avaliação excluída'):fail(res,404,'Avaliação não encontrada'));
+router.get('/:id/calculos',(req,res)=>{ const av=db.get('avaliacoes',req.params.id); if(!av) return fail(res,404,'Avaliação não encontrada'); ok(res,calc.indicadores(av,db.get('alunos',av.alunoId)||{})); });
+router.get('/aluno/:alunoId/lista',(req,res)=>ok(res,db.list('avaliacoes').filter(a=>a.alunoId===req.params.alunoId)));
+router.get('/aluno/:alunoId/comparativo',(req,res)=>{ const aluno=db.get('alunos',req.params.alunoId); if(!aluno) return fail(res,404,'Aluno não encontrado'); ok(res,montarEvolucao(aluno,db.list('avaliacoes').filter(a=>a.alunoId===aluno.id)).comparativo); });
+module.exports=router;

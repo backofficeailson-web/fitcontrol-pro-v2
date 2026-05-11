@@ -1,0 +1,4 @@
+const express=require('express'); const db=require('../database/db'); const auth=require('../middlewares/auth'); const {montarEvolucao}=require('../services/evolucao.service'); const {ok,fail}=require('../utils/apiResponse'); const router=express.Router(); router.use(auth);
+router.get('/',(req,res)=>ok(res,{alunos:db.list('alunos').length,avaliacoes:db.list('avaliacoes').length,treinos:db.list('treinos').length}));
+router.get('/aluno/:alunoId',(req,res)=>{ const aluno=db.get('alunos',req.params.alunoId); if(!aluno) return fail(res,404,'Aluno não encontrado'); const avaliacoes=db.list('avaliacoes').filter(a=>a.alunoId===aluno.id); const treinos=db.list('treinos').filter(t=>t.alunoId===aluno.id); ok(res,{aluno,avaliacoes,treinos,evolucao:montarEvolucao(aluno,avaliacoes)}); });
+module.exports=router;
