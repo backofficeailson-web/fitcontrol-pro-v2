@@ -1,0 +1,44 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      FLASK_APP: wsgi.py
+      FLASK_ENV: production
+      SECRET_KEY: change-this-production-secret
+      WTF_CSRF_SECRET_KEY: change-this-production-csrf-secret
+      DATABASE_URL: postgresql+psycopg://fitcontrol:fitcontrol@db:5432/fitcontrol
+      REDIS_URL: redis://redis:6379/0
+      SESSION_COOKIE_SECURE: "False"
+      FORCE_HTTPS: "False"
+      LOG_LEVEL: INFO
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./logs:/app/logs
+      - ./static/uploads:/app/static/uploads
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: fitcontrol
+      POSTGRES_USER: fitcontrol
+      POSTGRES_PASSWORD: fitcontrol
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitcontrol -d fitcontrol"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+volumes:
+  postgres_data:

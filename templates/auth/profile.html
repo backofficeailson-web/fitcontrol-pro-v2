@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Perfil{% endblock %}
+{% block breadcrumb %}Perfil{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Meu perfil</h1>
+    <div class="subtitle">Dados da conta e segurança</div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col" style="flex: 1 1 360px;">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Informações</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <span class="form-label">Nome</span>
+          <div>{{ current_user.nome }}</div>
+        </div>
+        <div class="form-group">
+          <span class="form-label">E-mail</span>
+          <div>{{ current_user.email }}</div>
+        </div>
+        <div class="form-group">
+          <span class="form-label">CREF</span>
+          <div>{{ current_user.cref or '—' }}</div>
+        </div>
+        <div class="form-group">
+          <span class="form-label">Conta criada em</span>
+          <div>{{ current_user.created_at.strftime('%d/%m/%Y') }}</div>
+        </div>
+        <div class="form-group">
+          <span class="form-label">Último acesso</span>
+          <div>{{ current_user.last_login_at.strftime('%d/%m/%Y %H:%M') if current_user.last_login_at else '—' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col" style="flex: 2 1 480px;">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Trocar senha</h3></div>
+      <div class="card-body">
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            <label class="form-label">{{ form.current_password.label.text }}</label>
+            {{ form.current_password(class="form-control") }}
+            {% for err in form.current_password.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">{{ form.new_password.label.text }}</label>
+              {{ form.new_password(class="form-control") }}
+              {% for err in form.new_password.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ form.confirm_new_password.label.text }}</label>
+              {{ form.confirm_new_password(class="form-control") }}
+              {% for err in form.confirm_new_password.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+            </div>
+          </div>
+          <div class="form-actions">
+            {{ form.submit(class="btn btn-primary") }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

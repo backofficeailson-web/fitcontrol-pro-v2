@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block pdf_title %}FitControl Pro{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+</head>
+<body class="pdf">
+  <div class="pdf-header">
+    <div class="pdf-brand">
+      <div class="logo-box">F</div>
+      <div>
+        <div class="name">FitControl Pro</div>
+        <div class="since">since 2018 Ailson Soares</div>
+      </div>
+    </div>
+    <div class="pdf-meta">
+      <div><strong>{% block pdf_doctype %}Documento{% endblock %}</strong></div>
+      <div>{{ today_date if today_date else '' }}</div>
+    </div>
+  </div>
+
+  {% block pdf_content %}{% endblock %}
+
+  <div class="pdf-footer">
+    FitControl Pro 2.0 · since 2018 Ailson Soares · Documento gerado automaticamente
+  </div>
+</body>
+</html>

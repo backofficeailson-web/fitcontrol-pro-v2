@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar conta · FitControl Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-hero">
+      <header class="auth-brand">
+        <div class="logo">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M5 11h4v10H5zM23 11h4v10h-4zM9 14h14v4H9z" fill="#03110b"/><path d="M11 9h2v14h-2zM19 9h2v14h-2z" fill="#03110b"/></svg>
+        </div>
+        <div>
+          <div class="name">FitControl<span class="pro-tag">PRO</span></div>
+          <span class="since">since 2018 Ailson Soares</span>
+        </div>
+      </header>
+
+      <div class="auth-hero-content">
+        <h1>Comece a operar como um <span class="accent">studio premium</span>.</h1>
+        <p>Cadastre seus alunos, gere treinos com IA, conduza avaliações Pollock e exporte relatórios profissionais em PDF — tudo num só lugar.</p>
+      </div>
+
+      <footer class="auth-hero-footer">
+        <span>v {{ APP_VERSION }}</span>
+        <span>since 2018 Ailson Soares</span>
+      </footer>
+    </section>
+
+    <section class="auth-form-side">
+      <div class="auth-form-card">
+        <h2>Criar conta</h2>
+        <p class="lead">Em menos de 60 segundos seu painel está pronto.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ category if category in ['success','danger','warning','info'] else 'info' }}">{{ msg }}</div>
+          {% endfor %}
+        {% endwith %}
+
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            <label class="form-label">{{ form.nome.label.text }}</label>
+            {{ form.nome(class="form-control", placeholder="Como seus alunos te conhecem") }}
+            {% for err in form.nome.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">{{ form.email.label.text }}</label>
+              {{ form.email(class="form-control", placeholder="coach@studio.com") }}
+              {% for err in form.email.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ form.cref.label.text }}</label>
+              {{ form.cref(class="form-control", placeholder="000000-G/UF") }}
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">{{ form.password.label.text }}</label>
+              {{ form.password(class="form-control", placeholder="Mínimo 8 caracteres") }}
+              {% for err in form.password.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ form.confirm_password.label.text }}</label>
+              {{ form.confirm_password(class="form-control", placeholder="Repita a senha") }}
+              {% for err in form.confirm_password.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+            </div>
+          </div>
+
+          {{ form.submit(class="btn btn-primary btn-block btn-lg") }}
+        </form>
+
+        <div class="auth-link-row">
+          <span>Já tem conta?</span>
+          <a href="{{ url_for('auth.login') }}">Entrar</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if exercicio else 'Novo' }} exercício{% endblock %}
+{% block breadcrumb %}Treinos · {{ treino.nome }} · Exercício{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ 'Editar exercício' if exercicio else 'Novo exercício' }}</h1>
+    <div class="subtitle">{{ treino.nome }}</div>
+  </div>
+</div>
+
+<form method="POST" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">{{ form.nome.label.text }}</label>
+      {{ form.nome(class="form-control") }}
+      {% for err in form.nome.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.grupo_muscular.label.text }}</label>
+      {{ form.grupo_muscular(class="form-select") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.dia_semana.label.text }}</label>
+      {{ form.dia_semana(class="form-select") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.ordem.label.text }}</label>
+      {{ form.ordem(class="form-control") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.series.label.text }}</label>
+      {{ form.series(class="form-control") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.repeticoes.label.text }}</label>
+      {{ form.repeticoes(class="form-control") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.carga.label.text }}</label>
+      {{ form.carga(class="form-control", placeholder="ex: 60kg") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.descanso.label.text }}</label>
+      {{ form.descanso(class="form-control") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.rpe.label.text }}</label>
+      {{ form.rpe(class="form-control", step="0.5") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.rir.label.text }}</label>
+      {{ form.rir(class="form-control") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.tempo_execucao.label.text }}</label>
+      {{ form.tempo_execucao(class="form-control", placeholder="2-0-2") }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">{{ form.tecnica.label.text }}</label>
+      {{ form.tecnica(class="form-select") }}
+    </div>
+  </div>
+
+  <div class="form-group mt-3">
+    <label class="form-label">{{ form.observacoes.label.text }}</label>
+    {{ form.observacoes(class="form-textarea", rows=3) }}
+  </div>
+
+  <div class="form-actions">
+    <a class="btn btn-ghost" href="{{ url_for('treinos.detail', treino_id=treino.id) }}">Cancelar</a>
+    {{ form.submit(class="btn btn-primary") }}
+  </div>
+</form>
+{% endblock %}

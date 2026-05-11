@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Avaliação · {{ aluno.nome }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+</head>
+<body class="pdf">
+  <div class="pdf-header">
+    <div class="pdf-brand">
+      <div class="logo-box">F</div>
+      <div>
+        <div class="name">FitControl Pro</div>
+        <div class="since">since 2018 Ailson Soares</div>
+      </div>
+    </div>
+    <div class="pdf-meta">
+      <div><strong>Relatório de Avaliação</strong></div>
+      <div>{{ avaliacao.data.strftime('%d/%m/%Y') }}</div>
+    </div>
+  </div>
+
+  <h1>{{ aluno.nome }}</h1>
+  <span class="badge-pdf">{{ avaliacao.protocolo }}</span>
+
+  <h2>Identificação do aluno</h2>
+  <div class="info-grid">
+    <div class="info-item"><div class="lbl">Idade</div><div class="val">{{ aluno.idade or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Sexo</div><div class="val">{{ aluno.sexo or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Objetivo</div><div class="val">{{ aluno.objetivo or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Nível</div><div class="val">{{ aluno.nivel_condicionamento }}</div></div>
+    <div class="info-item"><div class="lbl">Email</div><div class="val">{{ aluno.email or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Telefone</div><div class="val">{{ aluno.telefone or '—' }}</div></div>
+  </div>
+
+  <h2>Resultados consolidados</h2>
+  <table>
+    <thead><tr><th>Indicador</th><th>Valor</th><th>Classificação</th></tr></thead>
+    <tbody>
+      <tr><td>IMC</td><td>{{ avaliacao.imc or '—' }}</td><td>{{ avaliacao.classificacao_imc or '—' }}</td></tr>
+      <tr><td>% Gordura</td><td>{{ avaliacao.percentual_gordura or '—' }}%</td><td>—</td></tr>
+      <tr><td>Massa magra</td><td>{{ avaliacao.massa_magra or '—' }} kg</td><td>—</td></tr>
+      <tr><td>Massa gorda</td><td>{{ avaliacao.massa_gorda or '—' }} kg</td><td>—</td></tr>
+      <tr><td>RCQ</td><td>{{ avaliacao.rcq or '—' }}</td><td>cintura/quadril</td></tr>
+      <tr><td>TMB (Mifflin)</td><td>{{ avaliacao.tmb or '—' }}</td><td>kcal/dia</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Antropometria</h2>
+  <table>
+    <thead><tr><th>Medida</th><th>Valor</th><th>Medida</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Peso</td><td>{{ avaliacao.peso or '—' }} kg</td><td>Altura</td><td>{{ avaliacao.altura or '—' }}</td></tr>
+      <tr><td>Cintura</td><td>{{ avaliacao.cintura or '—' }} cm</td><td>Quadril</td><td>{{ avaliacao.quadril or '—' }} cm</td></tr>
+      <tr><td>Peito</td><td>{{ avaliacao.peito or '—' }} cm</td><td>Abdômen</td><td>{{ avaliacao.abdomen or '—' }} cm</td></tr>
+      <tr><td>Braço</td><td>{{ avaliacao.braco or '—' }} cm</td><td>Coxa</td><td>{{ avaliacao.coxa or '—' }} cm</td></tr>
+      <tr><td>Panturrilha</td><td>{{ avaliacao.panturrilha or '—' }} cm</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Dobras cutâneas (mm)</h2>
+  <table>
+    <thead><tr><th>Tríceps</th><th>Peitoral</th><th>Subaxilar</th><th>Subescapular</th><th>Abdominal</th><th>Suprailíaca</th><th>Coxa</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>{{ avaliacao.dobra_triceps or '—' }}</td>
+        <td>{{ avaliacao.dobra_peitoral or '—' }}</td>
+        <td>{{ avaliacao.dobra_subaxilar or '—' }}</td>
+        <td>{{ avaliacao.dobra_subescapular or '—' }}</td>
+        <td>{{ avaliacao.dobra_abdominal or '—' }}</td>
+        <td>{{ avaliacao.dobra_suprailiaca or '—' }}</td>
+        <td>{{ avaliacao.dobra_coxa or '—' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% if avaliacao.observacoes %}
+  <h2>Observações</h2>
+  <p>{{ avaliacao.observacoes }}</p>
+  {% endif %}
+
+  <div class="pdf-footer">
+    FitControl Pro 2.0 · since 2018 Ailson Soares · Documento confidencial
+  </div>
+</body>
+</html>

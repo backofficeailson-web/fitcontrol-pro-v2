@@ -1,0 +1,75 @@
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 11h4v10H5zM23 11h4v10h-4zM9 14h14v4H9z" fill="#03110b"/>
+        <path d="M11 9h2v14h-2zM19 9h2v14h-2z" fill="#03110b"/>
+      </svg>
+    </div>
+    <div class="label">
+      <span class="name">FitControl <span class="text-neon">Pro</span></span>
+      <span class="sub">since 2018 Ailson Soares</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Principal">
+    <div class="sidebar-section-title">Operação</div>
+    <a class="nav-link" href="{{ url_for('dashboard.index') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13l9-9 9 9M5 11v9h14v-9"/></svg>
+      </span>
+      Dashboard
+    </a>
+    <a class="nav-link" href="{{ url_for('alunos.index') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11a4 4 0 11-8 0 4 4 0 018 0zM4 21a8 8 0 0116 0"/></svg>
+      </span>
+      Alunos
+    </a>
+    <a class="nav-link" href="{{ url_for('avaliacoes.index') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17l3-3 3 3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H9l-6 6v10a2 2 0 002 2z"/></svg>
+      </span>
+      Avaliações
+    </a>
+    <a class="nav-link" href="{{ url_for('treinos.index') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M6 8h12v8H6zM2 10v4M22 10v4"/></svg>
+      </span>
+      Treinos
+    </a>
+
+    <div class="sidebar-section-title">Conhecimento</div>
+    <a class="nav-link" href="{{ url_for('protocolos.index') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h12l4 4v12a2 2 0 01-2 2H4V4zM14 4v4h4M8 14h8M8 10h4M8 18h6"/></svg>
+      </span>
+      Protocolos
+    </a>
+    <a class="nav-link" href="{{ url_for('relatorios.index') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18v4H3zM3 12h18M3 20h18M7 12v8M17 12v8"/></svg>
+      </span>
+      Relatórios
+    </a>
+
+    <div class="sidebar-section-title">Conta</div>
+    <a class="nav-link" href="{{ url_for('auth.profile') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11a4 4 0 100-8 4 4 0 000 8zM4 21v-1a7 7 0 0114 0v1"/></svg>
+      </span>
+      Perfil
+    </a>
+    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+      <span class="ico">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3m0 0l4-4m-4 4l4 4M9 4h8a2 2 0 012 2v12a2 2 0 01-2 2H9"/></svg>
+      </span>
+      Sair
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="brand-tagline">v {{ APP_VERSION }}</div>
+    <div style="margin-top:6px;">{{ APP_TAGLINE }}</div>
+  </div>
+</aside>

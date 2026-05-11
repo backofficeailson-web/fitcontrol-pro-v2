@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar · FitControl Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-hero">
+      <header class="auth-brand">
+        <div class="logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 11h4v10H5zM23 11h4v10h-4zM9 14h14v4H9z" fill="#03110b"/>
+            <path d="M11 9h2v14h-2zM19 9h2v14h-2z" fill="#03110b"/>
+          </svg>
+        </div>
+        <div>
+          <div class="name">FitControl<span class="pro-tag">PRO</span></div>
+          <span class="since">since 2018 Ailson Soares</span>
+        </div>
+      </header>
+
+      <div class="auth-hero-content">
+        <h1>Performance, dados e <span class="accent">progresso real</span> para sua academia.</h1>
+        <p>A plataforma SaaS premium para personal trainers e estúdios que tratam ciência, controle e excelência como diferencial competitivo.</p>
+
+        <div class="auth-features">
+          <div class="auth-feature">
+            <div class="ico">
+              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l5 5L21 4"/></svg>
+            </div>
+            <div>
+              <div class="ttl">Avaliações Pollock 3 e 7</div>
+              <div class="desc">Cálculo automático de % gordura, IMC, RCQ, TMB e massa magra.</div>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="ico">
+              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4l3 6 6 .8-4.5 4.4 1 6.4-5.5-3-5.5 3 1-6.4L3 10.8l6-.8z"/></svg>
+            </div>
+            <div>
+              <div class="ttl">IA de prescrição</div>
+              <div class="desc">Motor próprio com regras de biomecânica, fadiga e progressão.</div>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="ico">
+              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v4H4zM4 12h10M4 18h16"/></svg>
+            </div>
+            <div>
+              <div class="ttl">Protocolos especiais</div>
+              <div class="desc">Gestantes, cardíacos, diabetes e lipedema com alertas clínicos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="auth-hero-footer">
+        <span>FitControl Pro · v {{ APP_VERSION }}</span>
+        <span>since 2018 Ailson Soares</span>
+      </footer>
+
+      <svg class="auth-fitness-art" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2dffb3" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#22d3ee" stop-opacity="0.6"/>
+          </linearGradient>
+        </defs>
+        <circle cx="200" cy="200" r="170" stroke="url(#lg1)" stroke-width="1.5" stroke-dasharray="3 6"/>
+        <circle cx="200" cy="200" r="120" stroke="url(#lg1)" stroke-width="1" stroke-dasharray="2 5"/>
+        <g stroke="url(#lg1)" stroke-width="6" stroke-linecap="round">
+          <line x1="80" y1="200" x2="120" y2="200"/>
+          <line x1="280" y1="200" x2="320" y2="200"/>
+          <rect x="120" y="180" width="40" height="40" rx="6" fill="url(#lg1)" opacity="0.85"/>
+          <rect x="240" y="180" width="40" height="40" rx="6" fill="url(#lg1)" opacity="0.85"/>
+          <line x1="160" y1="200" x2="240" y2="200" stroke-width="10"/>
+        </g>
+        <g fill="#2dffb3" opacity="0.9">
+          <circle cx="200" cy="80" r="3"/>
+          <circle cx="320" cy="120" r="2"/>
+          <circle cx="100" cy="280" r="2.5"/>
+          <circle cx="300" cy="290" r="3"/>
+          <circle cx="120" cy="120" r="2"/>
+        </g>
+      </svg>
+    </section>
+
+    <section class="auth-form-side">
+      <div class="auth-form-card">
+        <h2>Bem-vindo de volta</h2>
+        <p class="lead">Acesse seu painel de coach premium.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, msg in messages %}
+            <div class="alert alert-{{ category if category in ['success','danger','warning','info'] else 'info' }}">{{ msg }}</div>
+          {% endfor %}
+        {% endwith %}
+
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            <label class="form-label" for="email">{{ form.email.label.text }}</label>
+            {{ form.email(id="email", class="form-control", placeholder="seu@email.com", autocomplete="email") }}
+            {% for err in form.email.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">{{ form.password.label.text }}</label>
+            <div style="position: relative;">
+              {{ form.password(id="password", class="form-control", placeholder="••••••••", autocomplete="current-password") }}
+              <button type="button" data-password-toggle="password"
+                      style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:0;color:var(--color-text-muted);cursor:pointer;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            {% for err in form.password.errors %}<div class="form-error">{{ err }}</div>{% endfor %}
+          </div>
+
+          <div class="flex items-center justify-between mb-4">
+            <label class="flex items-center gap-2" style="font-size: 0.85rem; color: var(--color-text-soft);">
+              {{ form.remember() }} Manter conectado
+            </label>
+            <span class="text-muted" style="font-size: 0.8rem;">Sessão segura</span>
+          </div>
+
+          {{ form.submit(class="btn btn-primary btn-block btn-lg") }}
+        </form>
+
+        <div class="auth-divider">ou</div>
+
+        <a href="{{ url_for('auth.register') }}" class="btn btn-ghost btn-block">Criar nova conta</a>
+
+        <div class="auth-link-row">
+          <span>FitControl Pro v {{ APP_VERSION }}</span>
+          <span class="brand-tagline">since 2018 Ailson Soares</span>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

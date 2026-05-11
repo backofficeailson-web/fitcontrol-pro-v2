@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: fitcontrol-pro-v2
+    env: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 wsgi:app
+    healthCheckPath: /healthz
+    envVars:
+      - key: FLASK_APP
+        value: wsgi.py
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WTF_CSRF_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fitcontrol-pro-v2-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: fitcontrol-pro-v2-redis
+          property: connectionString
+  - type: redis
+    name: fitcontrol-pro-v2-redis
+    plan: starter
+    ipAllowList: []
+databases:
+  - name: fitcontrol-pro-v2-db
+    plan: starter

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}{{ aluno.nome }}{% endblock %}
+{% block breadcrumb %}Alunos · {{ aluno.nome }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ aluno.nome }}</h1>
+    <div class="subtitle">{{ aluno.objetivo or '—' }} · {{ aluno.nivel_condicionamento }} · {{ aluno.idade or '—' }} anos</div>
+  </div>
+  <div class="page-header-actions">
+    <a class="btn btn-ghost" href="{{ url_for('alunos.edit', aluno_id=aluno.id) }}">Editar</a>
+    <a class="btn btn-secondary" href="{{ url_for('avaliacoes.create', aluno_id=aluno.id) }}">+ Nova avaliação</a>
+    <a class="btn btn-primary" href="{{ url_for('treinos.gerar_ia', aluno_id=aluno.id) }}">Gerar treino com IA</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col" style="flex: 1 1 360px;">
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title">Ficha</h3></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div><span class="form-label">E-mail</span><div>{{ aluno.email or '—' }}</div></div>
+          <div><span class="form-label">Telefone</span><div>{{ aluno.telefone or '—' }}</div></div>
+          <div><span class="form-label">Sexo</span><div>{{ aluno.sexo or '—' }}</div></div>
+          <div><span class="form-label">Altura</span><div>{{ aluno.altura or '—' }}</div></div>
+          <div><span class="form-label">Peso inicial</span><div>{{ aluno.peso_inicial or '—' }} kg</div></div>
+          <div><span class="form-label">Status</span><div>
+            {% if aluno.status == 'ativo' %}<span class="badge">ativo</span>
+            {% elif aluno.status == 'pausado' %}<span class="badge badge-warning">pausado</span>
+            {% else %}<span class="badge badge-muted">{{ aluno.status }}</span>{% endif %}
+          </div></div>
+        </div>
+
+        {% if aluno.condicoes_especiais %}
+        <div class="alert-medico mt-4">
+          <span class="icon">⚕</span>
+          <div>
+            <strong>Condições especiais</strong>
+            <p style="margin: 4px 0 0 0; color: var(--color-text-soft); font-size: .85rem;">
+              {{ aluno.condicoes_especiais }} — A IA aplicará restrições automaticamente nos treinos.
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if aluno.observacoes %}
+        <div class="form-group mt-4">
+          <span class="form-label">Observações</span>
+          <p>{{ aluno.observacoes }}</p>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('alunos.delete', aluno_id=aluno.id) }}"
+              data-confirm="Tem certeza que deseja excluir este aluno e TODOS os dados relacionados?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-danger btn-sm btn-block mt-4" type="submit">Excluir aluno</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Evolução</h3>
+        <a class="btn btn-ghost btn-sm" href="{{ url_for('avaliacoes.comparativo', aluno_id=aluno.id) }}">Comparativo</a>
+      </div>
+      <div class="card-body">
+        <div class="chart-canvas-wrap"><canvas data-evolucao-chart="{{ aluno.id }}"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col" style="flex: 2 1 480px;">
+    <div class="card mb-4">
+      <div class="card-header"><h3 class="card-title">Avaliações ({{ aluno.total_avaliacoes }})</h3>
+        <a class="btn btn-secondary btn-sm" href="{{ url_for('avaliacoes.create', aluno_id=aluno.id) }}">+ Avaliação</a>
+      </div>
+      <div class="card-body">
+        {% set avals = aluno.avaliacoes.all() %}
+        {% if avals %}
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Data</th><th>Protocolo</th><th>Peso</th><th>IMC</th><th>%G</th><th></th></tr></thead>
+              <tbody>
+                {% for av in avals %}
+                <tr>
+                  <td>{{ av.data.strftime('%d/%m/%Y') }}</td>
+                  <td><span class="badge badge-cyan">{{ av.protocolo }}</span></td>
+                  <td>{{ av.peso or '—' }}</td>
+                  <td>{{ av.imc or '—' }}</td>
+                  <td>{{ av.percentual_gordura or '—' }}</td>
+                  <td class="text-right"><a class="btn btn-ghost btn-sm" href="{{ url_for('avaliacoes.detail', avaliacao_id=av.id) }}">Abrir</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="empty-state"><p>Sem avaliações ainda.</p></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Treinos ({{ aluno.total_treinos }})</h3>
+        <a class="btn btn-primary btn-sm" href="{{ url_for('treinos.gerar_ia', aluno_id=aluno.id) }}">Gerar com IA</a>
+      </div>
+      <div class="card-body">
+        {% set treinos = aluno.treinos.all() %}
+        {% if treinos %}
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Nome</th><th>Objetivo</th><th>Divisão</th><th>Freq.</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                {% for t in treinos %}
+                <tr>
+                  <td>{{ t.nome }}</td>
+                  <td>{{ t.objetivo }}</td>
+                  <td>{{ t.divisao }}</td>
+                  <td>{{ t.frequencia_semanal }}x</td>
+                  <td><span class="badge {% if t.status != 'ativo' %}badge-muted{% endif %}">{{ t.status }}</span></td>
+                  <td class="text-right"><a class="btn btn-ghost btn-sm" href="{{ url_for('treinos.detail', treino_id=t.id) }}">Abrir</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="empty-state"><p>Sem treinos ainda.</p></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

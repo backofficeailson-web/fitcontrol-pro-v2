@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ protocolo.nome }}{% endblock %}
+{% block breadcrumb %}Protocolos · {{ protocolo.nome }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ protocolo.nome }}</h1>
+    <div class="subtitle">{{ protocolo.categoria }} · {{ protocolo.tipo }} · nível {{ protocolo.nivel_recomendado }}</div>
+  </div>
+  <div class="page-header-actions">
+    <a class="btn btn-ghost" href="{{ url_for('protocolos.index') }}">Voltar ao catálogo</a>
+  </div>
+</div>
+
+{% if protocolo.alerta_medico %}
+<div class="alert-medico mb-5">
+  <span class="icon">⚕</span>
+  <div>
+    <strong>Alerta clínico</strong>
+    <p style="margin: 4px 0 0 0; color: var(--color-text-soft);">{{ protocolo.alerta_medico }}</p>
+  </div>
+</div>
+{% endif %}
+
+<div class="row">
+  <div class="col" style="flex: 2 1 360px;">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Descrição</h3></div>
+      <div class="card-body">
+        <p>{{ protocolo.descricao }}</p>
+      </div>
+    </div>
+
+    {% if protocolo.parametros %}
+    <div class="card mt-4">
+      <div class="card-header"><h3 class="card-title">Parâmetros técnicos</h3></div>
+      <div class="card-body">
+        <div class="form-grid">
+          {% for k, v in protocolo.parametros.items() %}
+          <div>
+            <span class="form-label">{{ k|replace('_', ' ') }}</span>
+            <div>{{ v }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col" style="flex: 1 1 280px;">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Identificação</h3></div>
+      <div class="card-body">
+        <div class="form-group"><span class="form-label">Chave</span><div class="mono">{{ protocolo.chave }}</div></div>
+        <div class="form-group"><span class="form-label">Categoria</span><div>{{ protocolo.categoria }}</div></div>
+        <div class="form-group"><span class="form-label">Tipo</span><div>{{ protocolo.tipo }}</div></div>
+        <div class="form-group"><span class="form-label">Individualização médica</span>
+          <div>{{ 'Sim' if protocolo.requer_individualizacao else 'Não' }}</div>
+        </div>
+        {% if protocolo.categoria == 'treino' %}
+          <a class="btn btn-primary btn-block mt-3" href="{{ url_for('treinos.gerar_ia') }}">Gerar treino com IA</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

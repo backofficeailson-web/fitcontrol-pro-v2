@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatório · {{ aluno.nome }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+</head>
+<body class="pdf">
+  <div class="pdf-header">
+    <div class="pdf-brand">
+      <div class="logo-box">F</div>
+      <div>
+        <div class="name">FitControl Pro</div>
+        <div class="since">since 2018 Ailson Soares</div>
+      </div>
+    </div>
+    <div class="pdf-meta">
+      <div><strong>Relatório Completo</strong></div>
+    </div>
+  </div>
+
+  <h1>{{ aluno.nome }}</h1>
+
+  <h2>Ficha do aluno</h2>
+  <div class="info-grid">
+    <div class="info-item"><div class="lbl">Idade</div><div class="val">{{ aluno.idade or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Sexo</div><div class="val">{{ aluno.sexo or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Altura</div><div class="val">{{ aluno.altura or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Peso inicial</div><div class="val">{{ aluno.peso_inicial or '—' }} kg</div></div>
+    <div class="info-item"><div class="lbl">Objetivo</div><div class="val">{{ aluno.objetivo or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Nível</div><div class="val">{{ aluno.nivel_condicionamento }}</div></div>
+    <div class="info-item"><div class="lbl">Status</div><div class="val">{{ aluno.status }}</div></div>
+    <div class="info-item"><div class="lbl">E-mail</div><div class="val">{{ aluno.email or '—' }}</div></div>
+    <div class="info-item"><div class="lbl">Telefone</div><div class="val">{{ aluno.telefone or '—' }}</div></div>
+  </div>
+
+  {% if aluno.condicoes_especiais %}
+  <div class="alert-medico-pdf">
+    <strong>⚕ Condições especiais:</strong> {{ aluno.condicoes_especiais }}
+  </div>
+  {% endif %}
+
+  <h2>Histórico de avaliações ({{ avaliacoes|length }})</h2>
+  {% if avaliacoes %}
+  <table>
+    <thead>
+      <tr><th>Data</th><th>Protocolo</th><th>Peso</th><th>IMC</th><th>%G</th><th>MM (kg)</th><th>RCQ</th></tr>
+    </thead>
+    <tbody>
+      {% for av in avaliacoes %}
+      <tr>
+        <td>{{ av.data.strftime('%d/%m/%Y') }}</td>
+        <td>{{ av.protocolo }}</td>
+        <td>{{ av.peso or '—' }}</td>
+        <td>{{ av.imc or '—' }}</td>
+        <td>{{ av.percentual_gordura or '—' }}</td>
+        <td>{{ av.massa_magra or '—' }}</td>
+        <td>{{ av.rcq or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="color: #4d5d77;">Nenhuma avaliação registrada.</p>
+  {% endif %}
+
+  <h2>Treinos prescritos ({{ treinos|length }})</h2>
+  {% if treinos %}
+  {% for t in treinos %}
+  <div class="day-block">
+    <div class="day-title">{{ t.nome }} · {{ t.divisao }} · {{ t.frequencia_semanal }}x</div>
+    <p style="font-size: 9pt; margin: 4px 0; color: #4d5d77;">
+      {{ t.objetivo }} · {{ t.fase }} · {{ t.duracao_semanas }} semanas · status {{ t.status }}
+    </p>
+    {% if t.exercicios %}
+    <table>
+      <thead><tr><th>Dia</th><th>#</th><th>Exercício</th><th>Séries x Reps</th><th>Descanso</th></tr></thead>
+      <tbody>
+        {% for ex in t.exercicios %}
+        <tr>
+          <td>{{ ex.dia_semana }}</td>
+          <td>{{ ex.ordem }}</td>
+          <td>{{ ex.nome }} <span style="color:#4d5d77; font-size: 8pt;">({{ ex.grupo_muscular }})</span></td>
+          <td>{{ ex.series }} x {{ ex.repeticoes }}</td>
+          <td>{{ ex.descanso or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <p style="color: #4d5d77;">Nenhum treino registrado.</p>
+  {% endif %}
+
+  <div class="pdf-footer">
+    FitControl Pro 2.0 · since 2018 Ailson Soares · Relatório consolidado
+  </div>
+</body>
+</html>

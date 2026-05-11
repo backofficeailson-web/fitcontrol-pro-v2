@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Comparativo · {{ aluno.nome }}{% endblock %}
+{% block breadcrumb %}Avaliações · Comparativo{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Comparativo · {{ aluno.nome }}</h1>
+    <div class="subtitle">Evolução entre primeira e última avaliação registrada.</div>
+  </div>
+  <div class="page-header-actions">
+    <a class="btn btn-ghost" href="{{ url_for('alunos.detail', aluno_id=aluno.id) }}">Voltar ao aluno</a>
+  </div>
+</div>
+
+{% if dados.primeira and dados.ultima %}
+<section class="dashboard-grid mb-6">
+  <div class="metric"><div class="metric-label">Δ Peso</div>
+    <div class="metric-value">{{ dados.delta.peso if dados.delta.peso is not none else '—' }}</div>
+    <div class="metric-trend">{{ dados.primeira.peso or '—' }} → {{ dados.ultima.peso or '—' }} kg</div></div>
+  <div class="metric"><div class="metric-label">Δ IMC</div>
+    <div class="metric-value">{{ dados.delta.imc if dados.delta.imc is not none else '—' }}</div>
+    <div class="metric-trend">{{ dados.primeira.imc or '—' }} → {{ dados.ultima.imc or '—' }}</div></div>
+  <div class="metric"><div class="metric-label">Δ % Gordura</div>
+    <div class="metric-value">{{ dados.delta.percentual_gordura if dados.delta.percentual_gordura is not none else '—' }}</div>
+    <div class="metric-trend">{{ dados.primeira.percentual_gordura or '—' }} → {{ dados.ultima.percentual_gordura or '—' }}</div></div>
+  <div class="metric"><div class="metric-label">Δ Massa magra</div>
+    <div class="metric-value">{{ dados.delta.massa_magra if dados.delta.massa_magra is not none else '—' }}</div>
+    <div class="metric-trend">kg</div></div>
+  <div class="metric"><div class="metric-label">Δ Cintura</div>
+    <div class="metric-value">{{ dados.delta.cintura if dados.delta.cintura is not none else '—' }}</div>
+    <div class="metric-trend">cm</div></div>
+  <div class="metric"><div class="metric-label">Δ Quadril</div>
+    <div class="metric-value">{{ dados.delta.quadril if dados.delta.quadril is not none else '—' }}</div>
+    <div class="metric-trend">cm</div></div>
+</section>
+
+<div class="card mb-5">
+  <div class="card-header"><h3 class="card-title">Curva de evolução</h3></div>
+  <div class="card-body">
+    <div class="chart-canvas-wrap"><canvas data-evolucao-chart="{{ aluno.id }}"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h3 class="card-title">Histórico</h3></div>
+  <div class="card-body">
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Data</th><th>Peso</th><th>IMC</th><th>%G</th><th>MM</th><th>RCQ</th></tr></thead>
+        <tbody>
+          {% for av in dados.history %}
+          <tr>
+            <td>{{ av.data.strftime('%d/%m/%Y') }}</td>
+            <td>{{ av.peso or '—' }}</td>
+            <td>{{ av.imc or '—' }}</td>
+            <td>{{ av.percentual_gordura or '—' }}</td>
+            <td>{{ av.massa_magra or '—' }}</td>
+            <td>{{ av.rcq or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <p>Não há avaliações suficientes para gerar comparativo.</p>
+  <a class="btn btn-primary mt-3" href="{{ url_for('avaliacoes.create', aluno_id=aluno.id) }}">+ Criar avaliação</a>
+</div>
+{% endif %}
+{% endblock %}

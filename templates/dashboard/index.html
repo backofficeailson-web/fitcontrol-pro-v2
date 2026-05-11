@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+{% block content %}
+
+<section class="greeting-card">
+  <div>
+    <h2>Olá, <span class="text-neon">{{ current_user.nome.split()[0] }}</span>.</h2>
+    <p class="greeting-sub">Aqui está o panorama operacional do seu studio agora.</p>
+  </div>
+  <div class="greeting-stats">
+    <div class="stat-mini">
+      <div class="lbl">Alunos ativos</div>
+      <div class="val">{{ metrics.alunos_ativos }}</div>
+    </div>
+    <div class="stat-mini">
+      <div class="lbl">Treinos ativos</div>
+      <div class="val">{{ metrics.treinos_ativos }}</div>
+    </div>
+    <div class="stat-mini">
+      <div class="lbl">Protocolos</div>
+      <div class="val">{{ metrics.protocolos_ativos }}</div>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard-grid">
+  <div class="metric">
+    <div class="metric-label">Total de alunos</div>
+    <div class="metric-value">{{ metrics.total_alunos }}</div>
+    <span class="metric-trend"><span class="badge">{{ metrics.alunos_ativos }} ativos</span></span>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Avaliações</div>
+    <div class="metric-value">{{ metrics.total_avaliacoes }}</div>
+    <span class="metric-trend"><span class="badge badge-cyan">Pollock 3 / 7</span></span>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Treinos prescritos</div>
+    <div class="metric-value">{{ metrics.total_treinos }}</div>
+    <span class="metric-trend"><span class="badge badge-purple">{{ metrics.treinos_ativos }} ativos</span></span>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Protocolos aplicados</div>
+    <div class="metric-value">{{ metrics.protocolos_ativos }}</div>
+    <span class="metric-trend"><span class="badge">catálogo completo</span></span>
+  </div>
+</section>
+
+<section class="dashboard-charts">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Evolução das últimas avaliações</h3>
+      <span class="badge badge-cyan">Peso · % Gordura · IMC</span>
+    </div>
+    <div class="card-body">
+      <div class="chart-canvas-wrap">
+        <canvas id="chart-evolucao"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Atividade da semana</h3>
+    </div>
+    <div class="card-body">
+      <div class="chart-canvas-wrap">
+        <canvas id="chart-atividade"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard-feed">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Últimos alunos</h3>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('alunos.index') }}">Ver todos</a>
+    </div>
+    <div class="card-body">
+      {% if feed.ultimos_alunos %}
+        <div class="feed-list">
+          {% for a in feed.ultimos_alunos %}
+            <div class="feed-item">
+              <div class="avatar">{{ a.nome[:1]|upper }}</div>
+              <div class="body">
+                <strong>{{ a.nome }}</strong>
+                <div class="text-muted" style="font-size:.78rem;">{{ a.objetivo or 'objetivo não definido' }} · {{ a.nivel_condicionamento }}</div>
+              </div>
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('alunos.detail', aluno_id=a.id) }}">Abrir</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><div class="icon">⚡</div><h3>Nenhum aluno ainda</h3><p>Cadastre seu primeiro aluno para começar.</p>
+        <a class="btn btn-primary" href="{{ url_for('alunos.create') }}">Cadastrar aluno</a></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Últimas avaliações</h3>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('avaliacoes.index') }}">Ver todas</a>
+    </div>
+    <div class="card-body">
+      {% if feed.ultimas_avaliacoes %}
+      <div class="feed-list">
+        {% for av in feed.ultimas_avaliacoes %}
+          <div class="feed-item">
+            <span class="when">{{ av.data.strftime('%d/%m') if av.data }}</span>
+            <div class="body">
+              <strong>{{ av.aluno.nome if av.aluno else 'Aluno' }}</strong>
+              <div class="text-muted" style="font-size:.78rem;">{{ av.protocolo }} · IMC {{ av.imc or '—' }} · %G {{ av.percentual_gordura or '—' }}</div>
+            </div>
+            <a class="btn btn-ghost btn-sm" href="{{ url_for('avaliacoes.detail', avaliacao_id=av.id) }}">Abrir</a>
+          </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <div class="empty-state"><p>Nenhuma avaliação cadastrada.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Últimos treinos</h3>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('treinos.index') }}">Ver todos</a>
+    </div>
+    <div class="card-body">
+      {% if feed.ultimos_treinos %}
+      <div class="feed-list">
+        {% for t in feed.ultimos_treinos %}
+          <div class="feed-item">
+            <span class="when">{{ t.created_at.strftime('%d/%m') }}</span>
+            <div class="body">
+              <strong>{{ t.nome }}</strong>
+              <div class="text-muted" style="font-size:.78rem;">{{ t.objetivo }} · {{ t.divisao }} · {{ t.frequencia_semanal }}x semana</div>
+            </div>
+            <a class="btn btn-ghost btn-sm" href="{{ url_for('treinos.detail', treino_id=t.id) }}">Abrir</a>
+          </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <div class="empty-state"><p>Nenhum treino criado ainda.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  const chartEvolucao = {{ chart_evolucao|tojson }};
+  const chartAtividade = {{ chart_atividade|tojson }};
+  const evCanvas = document.getElementById("chart-evolucao");
+  const atCanvas = document.getElementById("chart-atividade");
+  if (evCanvas && (chartEvolucao.peso || []).some(v => v !== null)) {
+    FitControl.drawLineChart(evCanvas, {
+      labels: chartEvolucao.labels,
+      datasets: [
+        { label: "Peso (kg)", data: chartEvolucao.peso, color: "#2dffb3" },
+        { label: "% Gordura", data: chartEvolucao.gordura, color: "#22d3ee" },
+        { label: "IMC", data: chartEvolucao.imc, color: "#6d4ad4" },
+      ],
+    });
+  } else if (evCanvas) {
+    evCanvas.parentElement.innerHTML = '<div class="empty-state"><p>Sem avaliações suficientes para o gráfico.</p></div>';
+  }
+  if (atCanvas) {
+    FitControl.drawBarChart(atCanvas, {
+      labels: chartAtividade.labels,
+      datasets: [
+        { label: "Avaliações", data: chartAtividade.avaliacoes, color: "rgba(45,255,179,0.8)" },
+        { label: "Treinos", data: chartAtividade.treinos, color: "rgba(34,211,238,0.7)" },
+      ],
+    });
+  }
+})();
+</script>
+{% endblock %}
