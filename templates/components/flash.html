@@ -1,0 +1,12 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-stack">
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category if category in ['success','danger','warning','info'] else 'info' }} auto-dismiss">
+          <strong style="text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem;">{{ category }}</strong>
+          <span>{{ msg }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}

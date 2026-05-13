@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Relatórios{% endblock %}
+{% block breadcrumb %}Relatórios{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Relatórios</h1>
+    <div class="subtitle">Exporte relatórios PDF completos por aluno.</div>
+  </div>
+  <div class="page-header-actions">
+    <button class="btn btn-ghost" type="button" data-modal-open="#modal-protocolo">Selecionar protocolo</button>
+  </div>
+</div>
+
+{% if alunos %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Aluno</th><th>Avaliações</th><th>Treinos</th><th></th></tr></thead>
+    <tbody>
+      {% for a in alunos %}
+      <tr>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="avatar">{{ a.nome[:1]|upper }}</div>
+            <div>
+              <div style="font-weight:600;">{{ a.nome }}</div>
+              <div class="text-muted" style="font-size: .78rem;">{{ a.objetivo or '—' }}</div>
+            </div>
+          </div>
+        </td>
+        <td>{{ a.total_avaliacoes }}</td>
+        <td>{{ a.total_treinos }}</td>
+        <td class="text-right">
+          <a class="btn btn-primary btn-sm" href="{{ url_for('relatorios.aluno_pdf', aluno_id=a.id) }}">Exportar PDF</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <p>Sem alunos cadastrados.</p>
+  <a class="btn btn-primary mt-3" href="{{ url_for('alunos.create') }}">+ Cadastrar aluno</a>
+</div>
+{% endif %}
+{% endblock %}

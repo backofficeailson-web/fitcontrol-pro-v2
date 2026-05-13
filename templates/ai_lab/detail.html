@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Análise IA — {{ a.nome_arquivo }}{% endblock %}
+{% block content %}
+<div class="page-header glass-card" style="padding:18px 22px;margin-bottom:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+  <div>
+    <h1 style="margin:0;">🤖 Análise IA</h1>
+    <p style="opacity:.7;margin:.25rem 0 0;">{{ a.nome_arquivo }} ({{ a.tipo_arquivo }})</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <form method="POST" action="{{ url_for('ai_lab.reprocessar', analysis_id=a.id) }}" style="display:inline;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <button class="btn btn-secondary">🔄 Reprocessar</button>
+    </form>
+    <form method="POST" action="{{ url_for('ai_lab.delete', analysis_id=a.id) }}" style="display:inline;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <button class="btn btn-danger" onclick="return confirm('Remover esta análise?')">🗑️ Excluir</button>
+    </form>
+    <a class="btn" href="{{ url_for('ai_lab.index') }}">⬅️ Voltar</a>
+  </div>
+</div>
+
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>📊 Status</h3>
+  <p>
+    {% if a.status == 'done' %}<span class="badge badge-success">✅ Concluída</span>
+    {% elif a.status == 'failed' %}<span class="badge badge-danger">❌ Falhou</span>
+    {% elif a.status == 'processing' %}<span class="badge badge-warning">⏳ Processando ({{ a.progresso }}%)</span>
+    {% else %}<span class="badge">🕒 Pendente</span>{% endif %}
+  </p>
+  {% if a.erro_msg %}
+  <p style="color:#ff7676;">Erro: <code>{{ a.erro_msg }}</code></p>
+  {% endif %}
+</div>
+
+{% if a.status == 'done' %}
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>🎯 Scores</h3>
+  <div class="grid-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;">
+    {% for label, score in [
+      ("Segurança", a.score_seguranca), ("Performance", a.score_performance),
+      ("Arquitetura", a.score_arquitetura), ("Responsividade", a.score_responsividade),
+      ("Banco", a.score_banco)
+    ] %}
+    <div style="padding:14px;border-radius:10px;background:rgba(255,255,255,.04);text-align:center;">
+      <div style="font-size:28px;font-weight:700;color:{% if score and score >= 80 %}#7ee787{% elif score and score >= 60 %}#ffc447{% else %}#ff7676{% endif %};">
+        {{ score if score is not none else "—" }}
+      </div>
+      <small style="opacity:.75;">{{ label }}</small>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>📝 Resumo</h3>
+  <p>{{ a.resumo or "—" }}</p>
+</div>
+
+{% if a.erros_detectados %}
+<div class="glass-card" style="padding:22px;margin-bottom:18px;border-left:3px solid #ff7676;">
+  <h3>❌ Erros detectados</h3>
+  <pre style="white-space:pre-wrap;background:rgba(0,0,0,.25);padding:14px;border-radius:8px;">{{ a.erros_detectados }}</pre>
+</div>
+{% endif %}
+
+{% if a.sugestoes %}
+<div class="glass-card" style="padding:22px;margin-bottom:18px;border-left:3px solid #ffc447;">
+  <h3>💡 Sugestões</h3>
+  <pre style="white-space:pre-wrap;background:rgba(0,0,0,.25);padding:14px;border-radius:8px;">{{ a.sugestoes }}</pre>
+</div>
+{% endif %}
+
+{% if a.codigo_corrigido %}
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>🛠️ Código sugerido (correção)</h3>
+  <pre style="white-space:pre-wrap;background:rgba(0,0,0,.25);padding:14px;border-radius:8px;">{{ a.codigo_corrigido }}</pre>
+</div>
+{% endif %}
+
+{% if a.relatorio_tecnico %}
+<div class="glass-card" style="padding:22px;">
+  <h3>📑 Relatório técnico</h3>
+  <pre style="white-space:pre-wrap;background:rgba(0,0,0,.25);padding:14px;border-radius:8px;max-height:600px;overflow:auto;">{{ a.relatorio_tecnico }}</pre>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

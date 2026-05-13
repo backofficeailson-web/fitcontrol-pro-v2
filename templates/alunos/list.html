@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Alunos{% endblock %}
+{% block breadcrumb %}Alunos{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Alunos</h1>
+    <div class="subtitle">Gerencie sua base de alunos e parâmetros de cada perfil.</div>
+  </div>
+  <div class="page-header-actions">
+    <button class="btn btn-ghost" type="button" data-modal-open="#modal-protocolo">
+      Selecionar protocolo
+    </button>
+    <a class="btn btn-primary" href="{{ url_for('alunos.create') }}">+ Novo aluno</a>
+  </div>
+</div>
+
+<form method="GET" class="card mb-5" style="padding: var(--space-4);">
+  <div class="form-grid">
+    <div class="form-group" style="margin: 0;">
+      <label class="form-label">Buscar</label>
+      <input class="form-control" type="search" name="q" value="{{ search }}" placeholder="Nome ou e-mail..." />
+    </div>
+    <div class="form-group" style="margin: 0;">
+      <label class="form-label">Status</label>
+      <select class="form-select" name="status">
+        <option value="todos" {% if status == 'todos' %}selected{% endif %}>Todos</option>
+        <option value="ativo" {% if status == 'ativo' %}selected{% endif %}>Ativos</option>
+        <option value="inativo" {% if status == 'inativo' %}selected{% endif %}>Inativos</option>
+        <option value="pausado" {% if status == 'pausado' %}selected{% endif %}>Pausados</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin: 0; align-self: end;">
+      <button class="btn btn-secondary btn-block" type="submit">Aplicar filtros</button>
+    </div>
+  </div>
+</form>
+
+{% if alunos %}
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Aluno</th>
+        <th>Objetivo</th>
+        <th>Nível</th>
+        <th>Avaliações</th>
+        <th>Treinos</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in alunos %}
+      <tr>
+        <td>
+          <div class="flex items-center gap-3">
+            <div class="avatar">{{ a.nome[:1]|upper }}</div>
+            <div>
+              <div style="font-weight:600;">{{ a.nome }}</div>
+              <div class="text-muted" style="font-size: 0.78rem;">{{ a.email or '—' }}</div>
+            </div>
+          </div>
+        </td>
+        <td>{{ a.objetivo or '—' }}</td>
+        <td><span class="badge badge-cyan">{{ a.nivel_condicionamento }}</span></td>
+        <td>{{ a.total_avaliacoes }}</td>
+        <td>{{ a.total_treinos }}</td>
+        <td>
+          {% if a.status == 'ativo' %}<span class="badge">ativo</span>
+          {% elif a.status == 'pausado' %}<span class="badge badge-warning">pausado</span>
+          {% else %}<span class="badge badge-muted">inativo</span>{% endif %}
+        </td>
+        <td class="text-right">
+          <a class="btn btn-ghost btn-sm" href="{{ url_for('alunos.detail', aluno_id=a.id) }}">Abrir</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="icon">🏋️</div>
+  <h3>Nenhum aluno encontrado</h3>
+  <p>Comece cadastrando o primeiro aluno do seu studio.</p>
+  <a class="btn btn-primary mt-3" href="{{ url_for('alunos.create') }}">+ Cadastrar aluno</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ "Editar" if post else "Nova" }} Avaliação Postural{% endblock %}
+{% block content %}
+<div class="page-header glass-card" style="padding:18px 22px;margin-bottom:18px;">
+  <h1 style="margin:0;">🦴 {{ "Editar" if post else "Nova" }} Avaliação Postural</h1>
+  <p style="opacity:.7;margin:.25rem 0 0;">Aluno: <strong>{{ aluno.nome }}</strong></p>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="glass-card" style="padding:22px;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+  <h3>📅 Data e classificação</h3>
+  <div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <label>Data
+      <input type="date" name="data" value="{{ (post.data if post else '') }}"/>
+    </label>
+    <label>Grau de desvio
+      <select name="grau_desvio">
+        <option value="">—</option>
+        {% for g in ["leve","moderado","acentuado"] %}
+        <option value="{{g}}" {% if post and post.grau_desvio == g %}selected{% endif %}>{{ g|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+
+  <h3 style="margin-top:22px;">🧍 Segmentos corporais</h3>
+  <div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    {% for label, field in [
+      ("Cabeça","cabeca"),("Cervical","cervical"),("Ombros","ombros"),
+      ("Escápulas","escapulas"),("Coluna Torácica","coluna_toracica"),
+      ("Lombar","lombar"),("Quadril","quadril"),
+      ("Joelhos","joelhos"),("Pés","pes")
+    ] %}
+    <label>{{ label }}
+      <input type="text" name="{{ field }}" maxlength="255"
+             placeholder="Ex.: anteriorizada / protusa / alinhada"
+             value="{{ post[field] if post else '' }}"/>
+    </label>
+    {% endfor %}
+  </div>
+
+  <h3 style="margin-top:22px;">📐 Alinhamentos</h3>
+  <label>Alinhamento frontal
+    <textarea name="alinhamento_frontal" rows="3">{{ post.alinhamento_frontal if post else '' }}</textarea>
+  </label>
+  <label>Alinhamento lateral
+    <textarea name="alinhamento_lateral" rows="3">{{ post.alinhamento_lateral if post else '' }}</textarea>
+  </label>
+
+  <h3 style="margin-top:22px;">🩺 Indicadores clínicos</h3>
+  <div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <label>Dor relatada
+      <input type="text" name="dor_relatada" maxlength="255"
+             value="{{ post.dor_relatada if post else '' }}"/>
+    </label>
+    <label>Limitação funcional
+      <input type="text" name="limitacao_funcional" maxlength="255"
+             value="{{ post.limitacao_funcional if post else '' }}"/>
+    </label>
+  </div>
+
+  <h3 style="margin-top:22px;">📝 Observações</h3>
+  <label>Observações técnicas
+    <textarea name="observacoes_tecnicas" rows="3">{{ post.observacoes_tecnicas if post else '' }}</textarea>
+  </label>
+  <label>Observações do profissional
+    <textarea name="observacoes_profissional" rows="3">{{ post.observacoes_profissional if post else '' }}</textarea>
+  </label>
+
+  <h3 style="margin-top:22px;">📸 Imagens (PNG, JPG, WebP)</h3>
+  <div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    {% for label, field in [
+      ("Frontal","img_frontal"),("Lateral Direita","img_lateral_direita"),
+      ("Lateral Esquerda","img_lateral_esquerda"),("Posterior","img_posterior")
+    ] %}
+    <label>{{ label }}
+      <input type="file" name="{{ field }}" accept="image/png,image/jpeg,image/webp"/>
+      {% if post and post[field] %}
+        <small><a href="{{ url_for('static', filename=post[field]) }}" target="_blank">Atual</a></small>
+      {% endif %}
+    </label>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+    <button type="submit" class="btn btn-primary">💾 Salvar avaliação</button>
+    <a class="btn btn-secondary" href="{{ url_for('postura.por_aluno', aluno_id=aluno.id) }}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

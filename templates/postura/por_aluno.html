@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Postural — {{ aluno.nome }}{% endblock %}
+{% block content %}
+<div class="page-header glass-card" style="padding:18px 22px;margin-bottom:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:center;">
+  <div>
+    <h1 style="margin:0;">🦴 Avaliações Posturais</h1>
+    <p style="opacity:.7;margin:.25rem 0 0;">{{ aluno.nome }}</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('postura.create', aluno_id=aluno.id) }}">➕ Nova avaliação postural</a>
+</div>
+
+{% if posts %}
+<div class="table-responsive glass-card" style="padding:0;">
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr>
+      <th style="text-align:left;padding:12px;">Data</th>
+      <th style="text-align:left;padding:12px;">Grau</th>
+      <th style="text-align:left;padding:12px;">Dor</th>
+      <th style="text-align:right;padding:12px;">Ações</th>
+    </tr></thead>
+    <tbody>
+      {% for p in posts %}
+      <tr style="border-top:1px solid rgba(255,255,255,.06);">
+        <td style="padding:12px;">{{ p.data.strftime("%d/%m/%Y") if p.data else "—" }}</td>
+        <td style="padding:12px;">{{ p.grau_desvio or "—" }}</td>
+        <td style="padding:12px;">{{ p.dor_relatada or "—" }}</td>
+        <td style="padding:12px;text-align:right;">
+          <a class="btn btn-sm" href="{{ url_for('postura.detail', post_id=p.id) }}">Ver</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="glass-card" style="padding:32px;text-align:center;opacity:.75;">
+  Nenhuma avaliação postural registrada para este aluno.
+</div>
+{% endif %}
+{% endblock %}

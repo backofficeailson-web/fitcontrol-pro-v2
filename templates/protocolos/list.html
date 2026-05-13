@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Protocolos{% endblock %}
+{% block breadcrumb %}Protocolos{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Catálogo de protocolos</h1>
+    <div class="subtitle">Avaliação, treino e protocolos especiais.</div>
+  </div>
+</div>
+
+<h2 class="mt-3">Treino</h2>
+<div class="protocolo-grid mb-6">
+  {% for p in protocolos_treino %}
+    <a class="protocolo-card {% if p.requer_individualizacao %}especial{% endif %}"
+       href="{{ url_for('protocolos.detail', chave=p.chave) }}">
+      <div class="flex items-center justify-between">
+        <span class="nome">{{ p.nome }}</span>
+        {% if p.requer_individualizacao %}
+          <span class="badge badge-warning">médico</span>
+        {% else %}
+          <span class="badge">{{ p.tipo }}</span>
+        {% endif %}
+      </div>
+      <p class="desc">{{ p.descricao }}</p>
+      <div class="text-muted" style="font-size: .75rem;">Nível: {{ p.nivel_recomendado }}</div>
+    </a>
+  {% endfor %}
+</div>
+
+<h2 class="mt-3">Avaliação</h2>
+<div class="protocolo-grid">
+  {% for p in protocolos_avaliacao %}
+    <a class="protocolo-card" href="{{ url_for('protocolos.detail', chave=p.chave) }}">
+      <div class="flex items-center justify-between">
+        <span class="nome">{{ p.nome }}</span>
+        <span class="badge badge-cyan">{{ p.tipo }}</span>
+      </div>
+      <p class="desc">{{ p.descricao }}</p>
+    </a>
+  {% endfor %}
+</div>
+{% endblock %}

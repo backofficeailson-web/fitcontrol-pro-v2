@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Avaliação Postural — {{ aluno.nome }}{% endblock %}
+{% block content %}
+<div class="page-header glass-card" style="padding:18px 22px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1 style="margin:0;">🦴 Avaliação Postural</h1>
+    <p style="opacity:.7;margin:.25rem 0 0;">{{ aluno.nome }} · {{ post.data.strftime("%d/%m/%Y") if post.data else "—" }}</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a class="btn btn-secondary" href="{{ url_for('postura.edit', post_id=post.id) }}">✏️ Editar</a>
+    <form method="POST" action="{{ url_for('postura.delete', post_id=post.id) }}" style="display:inline;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <button class="btn btn-danger" onclick="return confirm('Remover esta avaliação?')">🗑️ Excluir</button>
+    </form>
+  </div>
+</div>
+
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>🩺 Classificação clínica</h3>
+  <div class="grid-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+    <div><strong>Grau de desvio:</strong>
+      <span class="badge badge-{{ 'danger' if post.grau_desvio == 'acentuado' else ('warning' if post.grau_desvio == 'moderado' else 'success') }}">
+        {{ post.grau_desvio or "—" }}
+      </span>
+    </div>
+    <div><strong>Dor relatada:</strong> {{ post.dor_relatada or "—" }}</div>
+    <div><strong>Limitação funcional:</strong> {{ post.limitacao_funcional or "—" }}</div>
+  </div>
+</div>
+
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>🧍 Segmentos corporais</h3>
+  <div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    {% for label, field in [
+      ("Cabeça","cabeca"),("Cervical","cervical"),("Ombros","ombros"),
+      ("Escápulas","escapulas"),("Coluna Torácica","coluna_toracica"),
+      ("Lombar","lombar"),("Quadril","quadril"),
+      ("Joelhos","joelhos"),("Pés","pes")
+    ] %}
+      <div style="padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.04);">
+        <strong>{{ label }}:</strong> {{ post[field] or "—" }}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% if post.alinhamento_frontal or post.alinhamento_lateral %}
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>📐 Alinhamentos</h3>
+  {% if post.alinhamento_frontal %}<p><strong>Frontal:</strong><br>{{ post.alinhamento_frontal }}</p>{% endif %}
+  {% if post.alinhamento_lateral %}<p><strong>Lateral:</strong><br>{{ post.alinhamento_lateral }}</p>{% endif %}
+</div>
+{% endif %}
+
+{% if post.observacoes_tecnicas or post.observacoes_profissional %}
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>📝 Observações</h3>
+  {% if post.observacoes_tecnicas %}<p><strong>Técnicas:</strong><br>{{ post.observacoes_tecnicas }}</p>{% endif %}
+  {% if post.observacoes_profissional %}<p><strong>Profissional:</strong><br>{{ post.observacoes_profissional }}</p>{% endif %}
+</div>
+{% endif %}
+
+{% if post.imagens() %}
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>📸 Imagens</h3>
+  <div class="grid-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+    {% for label, path in post.imagens() %}
+      <div style="text-align:center;">
+        <a href="{{ url_for('static', filename=path) }}" target="_blank">
+          <img src="{{ url_for('static', filename=path) }}" alt="{{ label }}"
+               style="max-width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.08);"/>
+        </a>
+        <small style="display:block;opacity:.75;margin-top:6px;">{{ label }}</small>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if anterior %}
+<div class="glass-card" style="padding:22px;">
+  <h3>🔄 Comparar com avaliação anterior</h3>
+  <a class="btn btn-primary"
+     href="{{ url_for('postura.comparar', post_id=post.id, anterior_id=anterior.id) }}">
+     Comparar evolução
+  </a>
+</div>
+{% endif %}
+{% endblock %}

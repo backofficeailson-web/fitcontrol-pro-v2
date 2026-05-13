@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Avaliação {{ avaliacao.data.strftime('%d/%m/%Y') }}{% endblock %}
+{% block breadcrumb %}Avaliações · {{ aluno.nome }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ aluno.nome }}</h1>
+    <div class="subtitle">Avaliação de {{ avaliacao.data.strftime('%d/%m/%Y') }} · Protocolo {{ avaliacao.protocolo }}</div>
+  </div>
+  <div class="page-header-actions">
+    <a class="btn btn-ghost" href="{{ url_for('avaliacoes.edit', avaliacao_id=avaliacao.id) }}">Editar</a>
+    <a class="btn btn-secondary" href="{{ url_for('avaliacoes.pdf', avaliacao_id=avaliacao.id) }}">Exportar PDF</a>
+  </div>
+</div>
+
+<section class="dashboard-grid mb-6">
+  <div class="metric"><div class="metric-label">IMC</div><div class="metric-value">{{ avaliacao.imc or '—' }}</div>
+    <div class="metric-trend">{{ avaliacao.classificacao_imc or '—' }}</div></div>
+  <div class="metric"><div class="metric-label">% Gordura</div><div class="metric-value">{{ avaliacao.percentual_gordura or '—' }}</div>
+    <div class="metric-trend">Pollock</div></div>
+  <div class="metric"><div class="metric-label">Massa magra</div><div class="metric-value">{{ avaliacao.massa_magra or '—' }}</div>
+    <div class="metric-trend">kg</div></div>
+  <div class="metric"><div class="metric-label">RCQ</div><div class="metric-value">{{ avaliacao.rcq or '—' }}</div>
+    <div class="metric-trend">cintura/quadril</div></div>
+  <div class="metric"><div class="metric-label">TMB</div><div class="metric-value">{{ avaliacao.tmb or '—' }}</div>
+    <div class="metric-trend">kcal/dia</div></div>
+</section>
+
+<div class="row">
+  <div class="col" style="flex: 1 1 380px;">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Antropometria</h3></div>
+      <div class="card-body">
+        <div class="form-grid-3">
+          <div><span class="form-label">Peso</span><div>{{ avaliacao.peso or '—' }}</div></div>
+          <div><span class="form-label">Altura</span><div>{{ avaliacao.altura or '—' }}</div></div>
+          <div><span class="form-label">Cintura</span><div>{{ avaliacao.cintura or '—' }}</div></div>
+          <div><span class="form-label">Quadril</span><div>{{ avaliacao.quadril or '—' }}</div></div>
+          <div><span class="form-label">Peito</span><div>{{ avaliacao.peito or '—' }}</div></div>
+          <div><span class="form-label">Braço</span><div>{{ avaliacao.braco or '—' }}</div></div>
+          <div><span class="form-label">Coxa</span><div>{{ avaliacao.coxa or '—' }}</div></div>
+          <div><span class="form-label">Panturrilha</span><div>{{ avaliacao.panturrilha or '—' }}</div></div>
+          <div><span class="form-label">Abdômen</span><div>{{ avaliacao.abdomen or '—' }}</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col" style="flex: 1 1 380px;">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Dobras cutâneas (mm)</h3></div>
+      <div class="card-body">
+        <div class="form-grid-3">
+          <div><span class="form-label">Tríceps</span><div>{{ avaliacao.dobra_triceps or '—' }}</div></div>
+          <div><span class="form-label">Peitoral</span><div>{{ avaliacao.dobra_peitoral or '—' }}</div></div>
+          <div><span class="form-label">Subaxilar</span><div>{{ avaliacao.dobra_subaxilar or '—' }}</div></div>
+          <div><span class="form-label">Subescapular</span><div>{{ avaliacao.dobra_subescapular or '—' }}</div></div>
+          <div><span class="form-label">Abdominal</span><div>{{ avaliacao.dobra_abdominal or '—' }}</div></div>
+          <div><span class="form-label">Suprailíaca</span><div>{{ avaliacao.dobra_suprailiaca or '—' }}</div></div>
+          <div><span class="form-label">Coxa</span><div>{{ avaliacao.dobra_coxa or '—' }}</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if avaliacao.observacoes %}
+<div class="card mt-5">
+  <div class="card-header"><h3 class="card-title">Observações</h3></div>
+  <div class="card-body"><p>{{ avaliacao.observacoes }}</p></div>
+</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('avaliacoes.delete', avaliacao_id=avaliacao.id) }}"
+      data-confirm="Excluir esta avaliação?" class="mt-5">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="btn btn-danger btn-sm" type="submit">Excluir avaliação</button>
+</form>
+{% endblock %}

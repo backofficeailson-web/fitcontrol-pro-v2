@@ -1,0 +1,115 @@
+/* ===========================================================
+   FitControl Pro 2.0 — Design Tokens
+   Premium SaaS Fitness — since 2018 Ailson Soares
+   =========================================================== */
+
+:root {
+  /* Colors — base palette */
+  --color-bg-deep: #050912;
+  --color-bg-base: #07101e;
+  --color-bg-surface: #0d1a2c;
+  --color-bg-surface-2: #122339;
+  --color-bg-elevated: rgba(15, 28, 48, 0.78);
+
+  --color-petroleo: #0f3a4f;
+  --color-petroleo-deep: #08243a;
+  --color-petroleo-soft: #1a4a63;
+
+  --color-neon: #2dffb3;
+  --color-neon-soft: #66ffd1;
+  --color-neon-deep: #0fcf8b;
+
+  --color-cyan: #22d3ee;
+  --color-cyan-deep: #0891b2;
+
+  --color-purple: #2e1a5f;
+  --color-purple-light: #6d4ad4;
+
+  --color-text: #e6f1ff;
+  --color-text-soft: #a5b9d4;
+  --color-text-muted: #6f829e;
+  --color-text-dim: #4d5d77;
+
+  --color-border: rgba(120, 180, 230, 0.10);
+  --color-border-strong: rgba(120, 180, 230, 0.22);
+  --color-border-neon: rgba(45, 255, 179, 0.35);
+
+  --color-danger: #ff5d6c;
+  --color-warning: #ffb84d;
+  --color-success: #2dffb3;
+  --color-info: #22d3ee;
+
+  /* Gradients */
+  --gradient-hero: radial-gradient(circle at 20% 20%, rgba(45,255,179,0.15), transparent 55%),
+                   radial-gradient(circle at 80% 30%, rgba(34,211,238,0.18), transparent 55%),
+                   linear-gradient(135deg, #050912 0%, #07101e 50%, #0d1a2c 100%);
+  --gradient-neon: linear-gradient(135deg, #2dffb3 0%, #22d3ee 100%);
+  --gradient-deep: linear-gradient(160deg, #07101e 0%, #0f3a4f 60%, #2e1a5f 110%);
+  --gradient-glass: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
+
+  /* Glow */
+  --glow-neon: 0 0 22px rgba(45, 255, 179, 0.35), 0 0 60px rgba(45, 255, 179, 0.18);
+  --glow-cyan: 0 0 18px rgba(34, 211, 238, 0.35);
+  --glow-soft: 0 0 0 1px rgba(45,255,179,0.18), 0 8px 30px rgba(0,0,0,0.45);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.55);
+
+  /* Radii */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+  --space-10: 72px;
+
+  /* Typography */
+  --font-display: 'Sora', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --fz-xs: 0.75rem;
+  --fz-sm: 0.85rem;
+  --fz-base: 0.95rem;
+  --fz-md: 1.05rem;
+  --fz-lg: 1.25rem;
+  --fz-xl: 1.5rem;
+  --fz-2xl: 1.85rem;
+  --fz-3xl: 2.4rem;
+  --fz-4xl: 3rem;
+
+  --lh-tight: 1.15;
+  --lh-base: 1.5;
+  --lh-relaxed: 1.7;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-black: 800;
+
+  /* Transitions */
+  --tr-fast: 120ms ease;
+  --tr-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --tr-slow: 420ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --sidebar-w: 280px;
+  --sidebar-w-collapsed: 80px;
+  --topbar-h: 72px;
+  --container-max: 1440px;
+}

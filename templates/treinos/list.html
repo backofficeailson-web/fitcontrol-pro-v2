@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Treinos{% endblock %}
+{% block breadcrumb %}Treinos{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Treinos</h1>
+    <div class="subtitle">Prescrições ativas, rascunhos e arquivados.</div>
+  </div>
+  <div class="page-header-actions">
+    <button class="btn btn-ghost" type="button" data-modal-open="#modal-protocolo">Selecionar protocolo</button>
+    <a class="btn btn-secondary" href="{{ url_for('treinos.create') }}">+ Treino manual</a>
+    <a class="btn btn-primary" href="{{ url_for('treinos.gerar_ia') }}">Gerar com IA</a>
+  </div>
+</div>
+
+<form method="GET" class="card mb-5" style="padding: var(--space-4);">
+  <div class="form-grid">
+    <div class="form-group" style="margin: 0;">
+      <label class="form-label">Aluno</label>
+      <select class="form-select" name="aluno_id" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        {% for a in alunos %}
+          <option value="{{ a.id }}" {% if aluno_filtro == a.id %}selected{% endif %}>{{ a.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group" style="margin: 0;">
+      <label class="form-label">Status</label>
+      <select class="form-select" name="status" onchange="this.form.submit()">
+        <option value="todos" {% if status == 'todos' %}selected{% endif %}>Todos</option>
+        <option value="ativo" {% if status == 'ativo' %}selected{% endif %}>Ativos</option>
+        <option value="rascunho" {% if status == 'rascunho' %}selected{% endif %}>Rascunhos</option>
+        <option value="arquivado" {% if status == 'arquivado' %}selected{% endif %}>Arquivados</option>
+      </select>
+    </div>
+  </div>
+</form>
+
+{% if treinos %}
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>Treino</th><th>Aluno</th><th>Objetivo</th><th>Divisão</th><th>Freq.</th><th>Nível</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for t in treinos %}
+      <tr>
+        <td>
+          <div style="font-weight: 600;">{{ t.nome }}</div>
+          <div class="text-muted" style="font-size: .75rem;">{{ t.protocolo_origem or '—' }}</div>
+        </td>
+        <td>{{ t.aluno.nome if t.aluno else '—' }}</td>
+        <td><span class="badge badge-purple">{{ t.objetivo }}</span></td>
+        <td>{{ t.divisao }}</td>
+        <td>{{ t.frequencia_semanal }}x</td>
+        <td>{{ t.nivel }}</td>
+        <td>
+          {% if t.status == 'ativo' %}<span class="badge">ativo</span>
+          {% elif t.status == 'rascunho' %}<span class="badge badge-warning">rascunho</span>
+          {% else %}<span class="badge badge-muted">{{ t.status }}</span>{% endif %}
+        </td>
+        <td class="text-right"><a class="btn btn-ghost btn-sm" href="{{ url_for('treinos.detail', treino_id=t.id) }}">Abrir</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="icon">💪</div>
+  <h3>Nenhum treino prescrito</h3>
+  <p>Crie um treino manual ou gere automaticamente via IA.</p>
+  <div class="flex gap-3 justify-center mt-3">
+    <a class="btn btn-secondary" href="{{ url_for('treinos.create') }}">+ Manual</a>
+    <a class="btn btn-primary" href="{{ url_for('treinos.gerar_ia') }}">Gerar com IA</a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

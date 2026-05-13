@@ -1,0 +1,169 @@
+/* =============================================================================
+ * FitControl Pro 2.0 — Mobile-First Responsive Layer
+ * Loaded LAST so it overrides desktop layout on small screens without
+ * touching the premium dark/glassmorphism identity.
+ * since 2018 Ailson Soares
+ * =========================================================================== */
+
+/* ----------- Universal touch / overflow guardrails ----------- */
+html, body {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+
+img, video, svg, canvas { max-width: 100%; height: auto; }
+
+/* iOS safe-area (notch) */
+.app-shell, .app-main, .app-content {
+  padding-left: max(env(safe-area-inset-left), 0px);
+  padding-right: max(env(safe-area-inset-right), 0px);
+}
+
+/* Touch-friendly base sizing */
+button, .btn, a.btn, input[type=submit], input[type=button] {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+input, select, textarea {
+  font-size: 16px;   /* prevents iOS auto-zoom */
+  min-height: 44px;
+}
+
+/* ----------- Tables: horizontal scroll wrapper ----------- */
+.table-responsive, .table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+}
+table { min-width: 560px; }
+
+/* ----------- Mobile nav trigger (hidden ≥ 992px) ----------- */
+.mobile-nav-toggle {
+  display: none;
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 12px;
+  z-index: 1100;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(10,14,28,0.72);
+  backdrop-filter: blur(14px);
+  color: #fff;
+  font-size: 22px;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.mobile-nav-toggle:focus-visible { outline: 2px solid #5b8def; outline-offset: 2px; }
+.mobile-nav-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(2,4,12,0.55);
+  backdrop-filter: blur(2px);
+  z-index: 1080;
+}
+body.nav-open .mobile-nav-backdrop { display: block; }
+
+/* ----------- PWA banners ----------- */
+.pwa-ios-banner {
+  position: fixed; left: 12px; right: 12px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  padding: 12px 14px;
+  background: rgba(10,14,28,0.92);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  color: #e7ecff;
+  display: flex; align-items: center; gap: 12px;
+  z-index: 1200;
+  font-size: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+}
+.pwa-ios-banner button {
+  margin-left: auto;
+  background: transparent;
+  color: #fff;
+  border: 0;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+#pwa-install-btn[hidden] { display: none !important; }
+
+/* =============================================================================
+ * Breakpoint: tablet & below (≤ 992px)
+ * =========================================================================== */
+@media (max-width: 992px) {
+  .mobile-nav-toggle { display: inline-flex; }
+
+  .app-shell { display: block; }
+
+  /* Slide-over sidebar */
+  .app-sidebar, .sidebar, aside.sidebar {
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    width: min(82vw, 320px);
+    transform: translateX(-100%);
+    transition: transform .26s ease;
+    z-index: 1090;
+    overflow-y: auto;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+  }
+  body.nav-open .app-sidebar,
+  body.nav-open .sidebar,
+  body.nav-open aside.sidebar { transform: translateX(0); }
+
+  .app-main { margin-left: 0 !important; width: 100%; }
+
+  .app-content { padding: 16px; }
+
+  /* Topbar tighter on mobile, leaves room for the hamburger */
+  .topbar, .app-topbar {
+    padding-left: 64px;
+    padding-right: 12px;
+  }
+
+  /* Dashboard cards stack */
+  .metrics-grid, .cards-grid, .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Generic 2/3/4-col grids -> 1 col */
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; }
+
+  /* Forms: full width */
+  form .row, .form-row { flex-direction: column; gap: 12px; }
+  form .col, .form-col { width: 100%; }
+}
+
+/* =============================================================================
+ * Breakpoint: phones (≤ 600px)
+ * =========================================================================== */
+@media (max-width: 600px) {
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+
+  .card, .panel, .glass-card { padding: 14px !important; border-radius: 14px !important; }
+
+  .btn { padding: 10px 14px; font-size: 14px; }
+  .btn-group { flex-wrap: wrap; gap: 8px; }
+
+  /* Action toolbars wrap */
+  .toolbar, .filters, .page-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Login/auth: less vertical padding */
+  .auth-shell, .auth-card { padding: 18px !important; }
+}
+
+/* =============================================================================
+ * Print: keep PDFs untouched, just neutralize mobile fixings
+ * =========================================================================== */
+@media print {
+  .mobile-nav-toggle, .mobile-nav-backdrop,
+  .pwa-ios-banner, #pwa-install-btn { display: none !important; }
+}

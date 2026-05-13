@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Offline{% endblock %}
+{% block content %}
+<section class="error-shell" style="min-height:60vh;display:flex;align-items:center;justify-content:center;">
+  <div class="glass-card" style="max-width:520px;text-align:center;padding:32px;">
+    <h1>📡 Você está offline</h1>
+    <p>Não foi possível conectar ao FitControl Pro agora.</p>
+    <p style="opacity:.75;font-size:14px;">
+      Verifique sua conexão Wi-Fi/4G/5G e tente novamente. Algumas páginas em cache
+      ainda podem estar disponíveis.
+    </p>
+    <button class="btn btn-primary" onclick="location.reload()">Tentar novamente</button>
+  </div>
+</section>
+{% endblock %}

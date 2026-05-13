@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Comparativo Postural{% endblock %}
+{% block content %}
+<div class="page-header glass-card" style="padding:18px 22px;margin-bottom:18px;">
+  <h1 style="margin:0;">🔄 Comparativo Postural</h1>
+  <p style="opacity:.7;margin:.25rem 0 0;">{{ aluno.nome }} · Evolução do desvio: {{ comp.evolucao_desvio }}</p>
+</div>
+
+<div class="table-responsive glass-card" style="padding:0;">
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr>
+      <th style="text-align:left;padding:12px;">Segmento</th>
+      <th style="text-align:left;padding:12px;">Anterior</th>
+      <th style="text-align:left;padding:12px;">Atual</th>
+      <th style="text-align:center;padding:12px;">Status</th>
+    </tr></thead>
+    <tbody>
+      {% for d in comp.diferencas %}
+      <tr style="border-top:1px solid rgba(255,255,255,.06);">
+        <td style="padding:12px;"><strong>{{ d.campo }}</strong></td>
+        <td style="padding:12px;opacity:.85;">{{ d.anterior }}</td>
+        <td style="padding:12px;">{{ d.atual }}</td>
+        <td style="padding:12px;text-align:center;">
+          {% if d.mudou %}🔁 Alterado{% else %}✅ Igual{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

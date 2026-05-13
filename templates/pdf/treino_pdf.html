@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Treino · {{ treino.nome }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+</head>
+<body class="pdf">
+  <div class="pdf-header">
+    <div class="pdf-brand">
+      <div class="logo-box">F</div>
+      <div>
+        <div class="name">FitControl Pro</div>
+        <div class="since">since 2018 Ailson Soares</div>
+      </div>
+    </div>
+    <div class="pdf-meta">
+      <div><strong>Plano de Treino</strong></div>
+      <div>{{ treino.created_at.strftime('%d/%m/%Y') }}</div>
+    </div>
+  </div>
+
+  <h1>{{ treino.nome }}</h1>
+  <p style="color:#4d5d77; font-size: 9pt;">{{ aluno.nome }} · {{ treino.objetivo }} · divisão {{ treino.divisao }} · {{ treino.frequencia_semanal }}x semana · {{ treino.duracao_semanas }} semanas</p>
+
+  {% if treino.alerta_medico %}
+  <div class="alert-medico-pdf">
+    <strong>⚕ Alerta clínico:</strong> {{ treino.alerta_medico }}
+  </div>
+  {% endif %}
+
+  <h2>Visão geral</h2>
+  <div class="info-grid">
+    <div class="info-item"><div class="lbl">Objetivo</div><div class="val">{{ treino.objetivo }}</div></div>
+    <div class="info-item"><div class="lbl">Modalidade</div><div class="val">{{ treino.modalidade }}</div></div>
+    <div class="info-item"><div class="lbl">Fase</div><div class="val">{{ treino.fase }}</div></div>
+    <div class="info-item"><div class="lbl">Divisão</div><div class="val">{{ treino.divisao }}</div></div>
+    <div class="info-item"><div class="lbl">Frequência</div><div class="val">{{ treino.frequencia_semanal }}x semana</div></div>
+    <div class="info-item"><div class="lbl">Nível</div><div class="val">{{ treino.nivel }}</div></div>
+    <div class="info-item"><div class="lbl">Duração</div><div class="val">{{ treino.duracao_semanas }} semanas</div></div>
+    <div class="info-item"><div class="lbl">Protocolo</div><div class="val">{{ treino.protocolo_origem or 'manual' }}</div></div>
+    <div class="info-item"><div class="lbl">Status</div><div class="val">{{ treino.status }}</div></div>
+  </div>
+
+  {% for dia, exercicios in exercicios_por_dia.items() %}
+  <div class="day-block">
+    <div class="day-title">DIA {{ dia }} · {{ exercicios|length }} exercícios</div>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Exercício</th><th>Grupo</th><th>Séries</th><th>Reps</th><th>Carga</th><th>Descanso</th><th>RPE/RIR</th><th>Técnica</th></tr>
+      </thead>
+      <tbody>
+        {% for ex in exercicios %}
+        <tr>
+          <td>{{ ex.ordem }}</td>
+          <td><strong>{{ ex.nome }}</strong>{% if ex.observacoes %}<br><span style="font-size: 8pt; color: #4d5d77;">{{ ex.observacoes }}</span>{% endif %}</td>
+          <td>{{ ex.grupo_muscular }}</td>
+          <td>{{ ex.series }}</td>
+          <td>{{ ex.repeticoes }}</td>
+          <td>{{ ex.carga or '—' }}</td>
+          <td>{{ ex.descanso or '—' }}</td>
+          <td>{% if ex.rpe %}RPE {{ ex.rpe }}{% endif %}{% if ex.rir is not none %} · RIR {{ ex.rir }}{% endif %}</td>
+          <td>{{ ex.tecnica or 'tradicional' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+
+  {% if treino.observacoes %}
+  <h2>Observações gerais</h2>
+  <p>{{ treino.observacoes }}</p>
+  {% endif %}
+
+  <div class="pdf-footer">
+    FitControl Pro 2.0 · since 2018 Ailson Soares · Plano de treino confidencial
+  </div>
+</body>
+</html>

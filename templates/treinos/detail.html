@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}{{ treino.nome }}{% endblock %}
+{% block breadcrumb %}Treinos · {{ treino.nome }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ treino.nome }}</h1>
+    <div class="subtitle">{{ aluno.nome }} · {{ treino.objetivo }} · {{ treino.divisao }} · {{ treino.frequencia_semanal }}x semana</div>
+  </div>
+  <div class="page-header-actions">
+    <a class="btn btn-ghost" href="{{ url_for('treinos.edit', treino_id=treino.id) }}">Editar</a>
+    <a class="btn btn-secondary" href="{{ url_for('treinos.add_exercicio', treino_id=treino.id) }}">+ Exercício</a>
+    <a class="btn btn-primary" href="{{ url_for('treinos.pdf', treino_id=treino.id) }}">Exportar PDF</a>
+  </div>
+</div>
+
+{% if treino.alerta_medico %}
+<div class="alert-medico mb-5">
+  <span class="icon">⚕</span>
+  <div>
+    <strong>Atenção médica</strong>
+    <p style="margin: 4px 0 0 0; color: var(--color-text-soft);">{{ treino.alerta_medico }}</p>
+  </div>
+</div>
+{% endif %}
+
+<section class="dashboard-grid mb-6">
+  <div class="metric"><div class="metric-label">Exercícios</div><div class="metric-value">{{ treino.total_exercicios }}</div></div>
+  <div class="metric"><div class="metric-label">Frequência</div><div class="metric-value">{{ treino.frequencia_semanal }}x</div><div class="metric-trend">por semana</div></div>
+  <div class="metric"><div class="metric-label">Duração</div><div class="metric-value">{{ treino.duracao_semanas }}</div><div class="metric-trend">semanas</div></div>
+  <div class="metric"><div class="metric-label">Nível</div><div class="metric-value" style="font-size: 1.6rem;">{{ treino.nivel }}</div><div class="metric-trend">{{ treino.fase }}</div></div>
+</section>
+
+{% if treino.observacoes %}
+<div class="card mb-5">
+  <div class="card-header"><h3 class="card-title">Observações</h3></div>
+  <div class="card-body"><p>{{ treino.observacoes }}</p></div>
+</div>
+{% endif %}
+
+{% for dia, exercicios in exercicios_por_dia.items() %}
+<div class="card mb-4">
+  <div class="card-header">
+    <h3 class="card-title">Dia {{ dia }}</h3>
+    <span class="badge">{{ exercicios|length }} exercícios</span>
+  </div>
+  <div class="card-body">
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr><th>#</th><th>Exercício</th><th>Grupo</th><th>Séries</th><th>Reps</th><th>Carga</th><th>Descanso</th><th>RPE/RIR</th><th>Técnica</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for ex in exercicios %}
+          <tr>
+            <td>{{ ex.ordem }}</td>
+            <td>
+              <div style="font-weight: 600;">{{ ex.nome }}</div>
+              {% if ex.observacoes %}<div class="text-muted" style="font-size: .75rem;">{{ ex.observacoes }}</div>{% endif %}
+            </td>
+            <td><span class="badge badge-cyan">{{ ex.grupo_muscular }}</span></td>
+            <td>{{ ex.series }}</td>
+            <td>{{ ex.repeticoes }}</td>
+            <td>{{ ex.carga or '—' }}</td>
+            <td>{{ ex.descanso or '—' }}</td>
+            <td>
+              {% if ex.rpe %}RPE {{ ex.rpe }}{% endif %}
+              {% if ex.rir is not none %} · RIR {{ ex.rir }}{% endif %}
+            </td>
+            <td>{{ ex.tecnica or 'tradicional' }}</td>
+            <td class="text-right">
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('treinos.edit_exercicio', exercicio_id=ex.id) }}">Editar</a>
+              <form method="POST" action="{{ url_for('treinos.delete_exercicio', exercicio_id=ex.id) }}"
+                    style="display: inline;" data-confirm="Excluir este exercício?">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-danger btn-sm" type="submit">×</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <p>Treino ainda sem exercícios.</p>
+  <a class="btn btn-primary mt-3" href="{{ url_for('treinos.add_exercicio', treino_id=treino.id) }}">+ Adicionar exercício</a>
+</div>
+{% endfor %}
+
+<form method="POST" action="{{ url_for('treinos.delete', treino_id=treino.id) }}"
+      data-confirm="Excluir treino e todos os exercícios?" class="mt-5">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="btn btn-danger btn-sm" type="submit">Excluir treino</button>
+</form>
+{% endblock %}

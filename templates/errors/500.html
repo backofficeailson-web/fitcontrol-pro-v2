@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}500 — Erro interno{% endblock %}
+{% block breadcrumb %}Erro 500{% endblock %}
+{% block content %}
+<div class="empty-state" style="padding: var(--space-10);">
+  <div class="icon" style="font-size: 4rem;">500</div>
+  <h3>Erro interno</h3>
+  <p>Algo inesperado aconteceu. Já registramos o ocorrido para investigação.</p>
+  <a class="btn btn-primary mt-4" href="{{ url_for('dashboard.index') }}">Voltar ao dashboard</a>
+</div>
+{% endblock %}

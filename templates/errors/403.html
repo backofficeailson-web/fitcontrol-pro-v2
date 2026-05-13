@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}403 — Acesso negado{% endblock %}
+{% block breadcrumb %}Erro 403{% endblock %}
+{% block content %}
+<div class="empty-state" style="padding: var(--space-10);">
+  <div class="icon" style="font-size: 4rem;">403</div>
+  <h3>Acesso negado</h3>
+  <p>Você não tem permissão para acessar este recurso.</p>
+  <a class="btn btn-primary mt-4" href="{{ url_for('dashboard.index') }}">Voltar ao dashboard</a>
+</div>
+{% endblock %}

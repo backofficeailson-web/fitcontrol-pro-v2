@@ -1,0 +1,76 @@
+<div class="modal-backdrop" id="modal-protocolo" role="dialog" aria-modal="true" aria-labelledby="modal-protocolo-title">
+  <div class="modal">
+    <button class="modal-close" type="button" data-modal-close aria-label="Fechar">×</button>
+    <h3 id="modal-protocolo-title">Catálogo de Protocolos</h3>
+    <p class="text-muted">Escolha um protocolo de avaliação ou treino para aplicar.</p>
+
+    <div class="form-group" style="margin-top: 14px;">
+      <input class="form-control" type="search" placeholder="Buscar protocolo..." data-proto-search />
+    </div>
+
+    <div data-tabs>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="treino" type="button">Treino</button>
+        <button class="tab" data-tab="avaliacao" type="button">Avaliação</button>
+      </div>
+
+      <div data-tab-panel="treino">
+        <div class="protocolo-grid">
+          {% for p in (protocolos_treino or []) %}
+          <div class="protocolo-card {% if p.requer_individualizacao %}especial{% endif %}"
+               data-proto-card data-proto-searchable="{{ p.nome }} {{ p.descricao }} {{ p.categoria }}">
+            <div class="flex items-center justify-between">
+              <span class="nome">{{ p.nome }}</span>
+              {% if p.requer_individualizacao %}
+                <span class="badge badge-warning">médico</span>
+              {% else %}
+                <span class="badge">{{ p.tipo }}</span>
+              {% endif %}
+            </div>
+            <p class="desc">{{ p.descricao }}</p>
+            {% if p.alerta_medico %}
+            <div class="alert-medico" style="padding: 10px 12px; font-size: 0.78rem;">
+              <span class="icon">⚠</span>
+              <span>{{ p.alerta_medico }}</span>
+            </div>
+            {% endif %}
+            <div class="flex gap-2">
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('protocolos.detail', chave=p.chave) }}">Detalhes</a>
+              <button class="btn btn-primary btn-sm" type="button"
+                      data-apply-protocol="{{ p.chave }}" data-apply-name="{{ p.nome }}">
+                Selecionar
+              </button>
+            </div>
+          </div>
+          {% else %}
+          <div class="empty-state"><p>Nenhum protocolo de treino disponível.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div data-tab-panel="avaliacao" class="hidden">
+        <div class="protocolo-grid">
+          {% for p in (protocolos_avaliacao or []) %}
+          <div class="protocolo-card" data-proto-card
+               data-proto-searchable="{{ p.nome }} {{ p.descricao }} {{ p.categoria }}">
+            <div class="flex items-center justify-between">
+              <span class="nome">{{ p.nome }}</span>
+              <span class="badge badge-cyan">{{ p.tipo }}</span>
+            </div>
+            <p class="desc">{{ p.descricao }}</p>
+            <div class="flex gap-2">
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('protocolos.detail', chave=p.chave) }}">Detalhes</a>
+              <button class="btn btn-primary btn-sm" type="button"
+                      data-apply-protocol="{{ p.chave }}" data-apply-name="{{ p.nome }}">
+                Selecionar
+              </button>
+            </div>
+          </div>
+          {% else %}
+          <div class="empty-state"><p>Nenhum protocolo de avaliação disponível.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

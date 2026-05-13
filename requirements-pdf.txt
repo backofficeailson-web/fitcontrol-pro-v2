@@ -1,0 +1,18 @@
+# =============================================================================
+# FitControl Pro V2 — PDF Generation (WeasyPrint)
+# Instale APENAS se precisar gerar PDFs localmente.
+#
+# Linux/Mac/Docker: já vem pronto. Apenas execute:
+#   pip install -r requirements-pdf.txt
+#
+# Windows: requer GTK3 runtime instalado ANTES do pip install.
+#   1. Baixe: https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
+#   2. Instale o .exe (next, next, finish)
+#   3. Reinicie o terminal
+#   4. pip install -r requirements-pdf.txt
+#
+# Em produção (Render/Railway/Fly/Docker), o Dockerfile já instala todas as
+# dependências de sistema necessárias para WeasyPrint funcionar.
+# =============================================================================
+
+WeasyPrint>=62.3,<63.0

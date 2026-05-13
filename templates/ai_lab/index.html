@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}IA Lab — Análise de Arquivos{% endblock %}
+{% block content %}
+<div class="page-header glass-card" style="padding:18px 22px;margin-bottom:18px;">
+  <h1 style="margin:0;">🤖 IA Lab</h1>
+  <p style="opacity:.7;margin:.25rem 0 0;">
+    Envie ZIPs de código, PDFs, imagens ou documentos. A IA analisa erros,
+    segurança, performance, arquitetura e gera relatório técnico.
+  </p>
+</div>
+
+<div class="glass-card" style="padding:22px;margin-bottom:18px;">
+  <h3>📤 Nova análise</h3>
+  <form method="POST" action="{{ url_for('ai_lab.upload') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <label>
+      Arquivo (.zip, .pdf, .png/.jpg, .py, .html, .css, .js, .json, .txt, .md):
+      <input type="file" name="arquivo" required
+             accept=".zip,.pdf,.png,.jpg,.jpeg,.webp,.py,.html,.css,.js,.json,.txt,.md,.sql,.yml,.yaml,.toml,.ini,.cfg"/>
+    </label>
+    <p style="opacity:.65;font-size:13px;">
+      Tamanho máximo: 16 MB · Validação MIME + extensão · Hash SHA-256 do arquivo registrado.
+    </p>
+    <button type="submit" class="btn btn-primary">🚀 Enviar para análise</button>
+  </form>
+</div>
+
+<div class="glass-card" style="padding:0;">
+  <h3 style="padding:18px 22px;margin:0;border-bottom:1px solid rgba(255,255,255,.06);">📜 Histórico de análises</h3>
+  {% if analises %}
+  <div class="table-responsive">
+    <table class="table" style="width:100%;border-collapse:collapse;">
+      <thead><tr>
+        <th style="text-align:left;padding:12px;">Arquivo</th>
+        <th style="text-align:left;padding:12px;">Tipo</th>
+        <th style="text-align:left;padding:12px;">Tamanho</th>
+        <th style="text-align:left;padding:12px;">Status</th>
+        <th style="text-align:left;padding:12px;">Data</th>
+        <th style="text-align:right;padding:12px;">Ações</th>
+      </tr></thead>
+      <tbody>
+        {% for a in analises %}
+        <tr style="border-top:1px solid rgba(255,255,255,.06);">
+          <td style="padding:12px;">{{ a.nome_arquivo }}</td>
+          <td style="padding:12px;"><span class="badge">{{ a.tipo_arquivo }}</span></td>
+          <td style="padding:12px;">{{ "%.1f"|format(a.tamanho_bytes/1024) }} KB</td>
+          <td style="padding:12px;">
+            {% if a.status == 'done' %}<span class="badge badge-success">✅ Concluída</span>
+            {% elif a.status == 'failed' %}<span class="badge badge-danger">❌ Falhou</span>
+            {% elif a.status == 'processing' %}<span class="badge badge-warning">⏳ {{ a.progresso }}%</span>
+            {% else %}<span class="badge">🕒 Pendente</span>{% endif %}
+          </td>
+          <td style="padding:12px;opacity:.8;">{{ a.created_at.strftime("%d/%m %H:%M") if a.created_at else "" }}</td>
+          <td style="padding:12px;text-align:right;">
+            <a class="btn btn-sm" href="{{ url_for('ai_lab.detail', analysis_id=a.id) }}">Ver</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="padding:32px;text-align:center;opacity:.7;">
+    Nenhuma análise ainda. Envie seu primeiro arquivo acima.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#050912" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="FitControl Pro — plataforma SaaS fitness premium. since 2018 Ailson Soares." />
+  <meta name="format-detection" content="telephone=no" />
+
+  <!-- iOS / Safari PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FitControl" />
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/icons/icon-192.png') }}" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="{{ url_for('pwa.manifest') }}" />
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='img/icons/icon-192.png') }}" />
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='img/icons/icon-512.png') }}" />
+
+  <title>{% block title %}FitControl Pro{% endblock %} · {{ APP_NAME }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <!-- Mobile layer MUST be last so it overrides desktop on small screens -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Mobile-only hamburger toggle -->
+  <button type="button"
+          class="mobile-nav-toggle"
+          aria-label="Abrir menu"
+          aria-controls="app-sidebar"
+          onclick="document.body.classList.toggle('nav-open')">
+    ☰
+  </button>
+  <div class="mobile-nav-backdrop" onclick="document.body.classList.remove('nav-open')"></div>
+
+  <div class="app-shell">
+    {% include "components/sidebar.html" %}
+    <main class="app-main">
+      {% include "components/topbar.html" %}
+      <section class="app-content">
+        {% include "components/flash.html" %}
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+
+  <!-- Optional install button (Android/Chrome). pwa.js toggles its visibility. -->
+  <button id="pwa-install-btn" class="btn btn-primary" hidden
+          style="position:fixed;bottom:16px;right:16px;z-index:1200;">
+    📲 Instalar FitControl
+  </button>
+
+  {% include "components/protocolo_selector.html" %}
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pwa.js') }}" defer></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

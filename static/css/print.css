@@ -1,0 +1,171 @@
+/* ===========================================================
+   FitControl Pro 2.0 — Print / PDF (WeasyPrint)
+   =========================================================== */
+
+@page {
+  size: A4;
+  margin: 18mm 14mm;
+  @top-left {
+    content: "FitControl Pro";
+    font-family: 'Inter', sans-serif;
+    font-size: 9pt;
+    color: #0f3a4f;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  @top-right {
+    content: "since 2018 Ailson Soares";
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    color: #6f829e;
+    letter-spacing: 0.16em;
+  }
+  @bottom-right {
+    content: "Página " counter(page) " / " counter(pages);
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    color: #6f829e;
+  }
+  @bottom-left {
+    content: "FitControl Pro 2.0 — Documento confidencial";
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    color: #6f829e;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body.pdf {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-size: 10pt;
+  color: #0a1525;
+  line-height: 1.5;
+  margin: 0;
+  background: #fff;
+}
+
+.pdf h1, .pdf h2, .pdf h3 {
+  font-family: 'Sora', 'Inter', sans-serif;
+  color: #07101e;
+  margin: 0 0 8px 0;
+}
+.pdf h1 { font-size: 22pt; letter-spacing: -0.01em; }
+.pdf h2 { font-size: 14pt; padding-bottom: 6px; border-bottom: 2px solid #2dffb3; margin-top: 18px; }
+.pdf h3 { font-size: 11pt; color: #0f3a4f; }
+
+.pdf .pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 3px solid #07101e;
+  margin-bottom: 18px;
+}
+.pdf .pdf-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.pdf .pdf-brand .logo-box {
+  width: 50px; height: 50px;
+  background: linear-gradient(135deg, #2dffb3, #22d3ee);
+  border-radius: 12px;
+  display: inline-block;
+  text-align: center;
+  line-height: 50px;
+  font-family: 'Sora', sans-serif;
+  color: #03110b;
+  font-weight: 800;
+  font-size: 18pt;
+}
+.pdf .pdf-brand .name {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: 18pt;
+}
+.pdf .pdf-brand .since {
+  font-size: 8pt;
+  color: #6f829e;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.pdf .pdf-meta { text-align: right; font-size: 9pt; color: #4d5d77; }
+
+.pdf .info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 16px;
+  margin-bottom: 14px;
+}
+.pdf .info-item .lbl {
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #6f829e;
+}
+.pdf .info-item .val { font-weight: 600; font-size: 10.5pt; color: #07101e; }
+
+.pdf table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  margin-bottom: 14px;
+  font-size: 9pt;
+}
+.pdf table th {
+  background: #07101e;
+  color: #2dffb3;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 8pt;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.pdf table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.pdf table tr:nth-child(even) td { background: #f6f9fc; }
+
+.pdf .alert-medico-pdf {
+  border-left: 4px solid #ff5d6c;
+  background: #fff5f6;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 9pt;
+  color: #7a1c25;
+}
+
+.pdf .pdf-footer {
+  margin-top: 24px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 8pt;
+  color: #6f829e;
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+
+.pdf .badge-pdf {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e7fff4;
+  color: #0fcf8b;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.pdf .day-block {
+  page-break-inside: avoid;
+  margin-bottom: 12px;
+}
+.pdf .day-title {
+  background: linear-gradient(90deg, #07101e, #0f3a4f);
+  color: #2dffb3;
+  padding: 6px 12px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 10pt;
+}
