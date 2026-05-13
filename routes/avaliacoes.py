@@ -42,7 +42,7 @@ def create():
         return redirect(url_for("alunos.index"))
 
     form = AvaliacaoForm()
-    if not form.data.get("data"):
+    if not form.data.data:
         form.data.data = date.today()
     if aluno:
         form.aluno_id.data = aluno.id
@@ -52,7 +52,8 @@ def create():
         if not target:
             flash("Aluno inválido.", "danger")
             return redirect(url_for("alunos.index"))
-        av = AvaliacaoService.create(current_user.id, target, form.data)
+        payload = {name: field.data for name, field in form._fields.items()}
+        av = AvaliacaoService.create(current_user.id, target, payload)
         flash("Avaliação cadastrada com sucesso.", "success")
         return redirect(url_for("avaliacoes.detail", avaliacao_id=av.id))
 

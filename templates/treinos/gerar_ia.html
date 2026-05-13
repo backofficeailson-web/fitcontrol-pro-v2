@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Gerar treino com IA{% endblock %}
 {% block breadcrumb %}Treinos · IA{% endblock %}
-{% block content %}
 
+{% block content %}
 <div class="page-header">
   <div>
     <h1>Gerar treino com IA</h1>
@@ -12,46 +12,55 @@
 
 <div class="row">
   <div class="col" style="flex: 2 1 480px;">
-    <form method="POST" class="card" novalidate>
+    <form method="POST">
       {{ form.hidden_tag() }}
 
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Aluno</label>
           {% if aluno %}
-            <input class="form-control" value="{{ aluno.nome }}" disabled />
+            <input class="form-control" value="{{ aluno.nome }}" disabled>
             {{ form.aluno_id() }}
           {% else %}
             <select class="form-select" name="aluno_id" required>
               <option value="">Selecione...</option>
-              {% for a in alunos %}<option value="{{ a.id }}">{{ a.nome }}</option>{% endfor %}
+              {% for a in alunos %}
+                <option value="{{ a.id }}">{{ a.nome }}</option>
+              {% endfor %}
             </select>
           {% endif %}
         </div>
+
         <div class="form-group">
           <label class="form-label">{{ form.nome.label.text }}</label>
           {{ form.nome(class="form-control", placeholder="Treino IA - Hipertrofia 8 semanas") }}
         </div>
+
         <div class="form-group">
           <label class="form-label">{{ form.objetivo.label.text }}</label>
           {{ form.objetivo(class="form-select") }}
         </div>
+
         <div class="form-group">
           <label class="form-label">{{ form.divisao.label.text }}</label>
           {{ form.divisao(class="form-select") }}
         </div>
+
         <div class="form-group">
           <label class="form-label">{{ form.frequencia_semanal.label.text }}</label>
           {{ form.frequencia_semanal(class="form-control") }}
         </div>
+
         <div class="form-group">
           <label class="form-label">{{ form.nivel.label.text }}</label>
           {{ form.nivel(class="form-select") }}
         </div>
+
         <div class="form-group">
           <label class="form-label">{{ form.duracao_semanas.label.text }}</label>
           {{ form.duracao_semanas(class="form-control") }}
         </div>
+
         <div class="form-group">
           <label class="form-label">{{ form.protocolo_chave.label.text }}</label>
           {{ form.protocolo_chave(class="form-select") }}
@@ -68,7 +77,9 @@
 
   <div class="col" style="flex: 1 1 320px;">
     <div class="card">
-      <div class="card-header"><h3 class="card-title">Como a IA funciona</h3></div>
+      <div class="card-header">
+        <h3 class="card-title">Como a IA funciona</h3>
+      </div>
       <div class="card-body">
         <ul style="padding-left: 18px; color: var(--color-text-soft);">
           <li>Pool de exercícios filtrado por contraindicações.</li>
@@ -81,7 +92,9 @@
     </div>
 
     <div class="card mt-4">
-      <div class="card-header"><h3 class="card-title">Protocolos especiais</h3></div>
+      <div class="card-header">
+        <h3 class="card-title">Protocolos especiais</h3>
+      </div>
       <div class="card-body">
         {% for p in protocolos %}
           {% if p.requer_individualizacao %}
