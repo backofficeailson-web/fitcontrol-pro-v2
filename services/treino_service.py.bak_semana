@@ -6,13 +6,16 @@ from models.exercicio import Exercicio
 from repositories.treino_repository import TreinoRepository
 from repositories.exercicio_repository import ExercicioRepository
 from services.ai_engine import AIEngine
-from services.protocolo_service import ProtocoloService
 from utils.security import sanitize_text
 
 
 class TreinoService:
     @staticmethod
-    def list_for_user(user_id: int, aluno_id: int | None = None, status: str | None = None) -> list[Treino]:
+    def list_for_user(
+        user_id: int,
+        aluno_id: int | None = None,
+        status: str | None = None,
+    ) -> list[Treino]:
         return TreinoRepository.list_for_user(user_id, aluno_id, status)
 
     @staticmethod
@@ -39,7 +42,15 @@ class TreinoService:
         return TreinoRepository.add(treino)
 
     @staticmethod
-    def update(treino: Treino, data: dict) -> Treino:
+    def create(user_id: int, aluno, data: dict) -> Treino:
+        return TreinoService.create_manual(user_id, aluno.id, data)
+
+    @staticmethod
+    def update(treino: Treino, *args) -> Treino:
+        # Compatibility: old callers used update(treino, data), patched routes
+        # may call update(treino, aluno, data).
+        data = args[-1] if args else {}
+
         treino.nome = sanitize_text(data.get("nome"), 160) or treino.nome
         treino.objetivo = data.get("objetivo") or treino.objetivo
         treino.modalidade = data.get("modalidade") or treino.modalidade
@@ -59,16 +70,29 @@ class TreinoService:
         TreinoRepository.delete(treino)
 
     @staticmethod
-    def gerar_via_ia(user_id: int, aluno, *, nome: str, objetivo: str, divisao: str,
-                    frequencia: int, nivel: str, protocolo_chave: str | None = None,
-                    duracao_semanas: int = 8, modalidade: str = "musculacao",
-                    fase: str = "adaptacao") -> Treino:
+    def gerar_via_ia(
+        user_id: int,
+        aluno,
+        *,
+        nome: str,
+        objetivo: str,
+        divisao: str,
+        frequencia: int,
+        nivel: str,
+        protocolo_chave: str | None = None,
+        duracao_semanas: int = 8,
+        modalidade: str = "musculacao",
+        fase: str = "adaptacao",
+    ) -> Treino:
         plano = AIEngine.gerar_treino(
-            aluno=aluno, objetivo=objetivo, divisao=divisao,
-            frequencia=frequencia, nivel=nivel,
-            protocolo_chave=protocolo_chave, duracao_semanas=duracao_semanas,
+            aluno=aluno,
+            objetivo=objetivo,
+            divisao=divisao,
+            frequencia=frequencia,
+            nivel=nivel,
+            protocolo_chave=protocolo_chave,
+            duracao_semanas=duracao_semanas,
         )
-        protocolo = ProtocoloService.get(protocolo_chave) if protocolo_chave else None
 
         treino = Treino(
             user_id=user_id,
@@ -78,14 +102,15 @@ class TreinoService:
             modalidade=modalidade,
             fase=fase,
             divisao=divisao,
-            frequencia_semanal=frequencia,
+            frequencia_semanal=int(frequencia or 1),
             nivel=nivel,
             protocolo_origem=protocolo_chave,
-            duracao_semanas=duracao_semanas,
-            observacoes="Treino gerado pelo motor de IA do FitControl Pro.",
+            duracao_semanas=int(duracao_semanas or 8),
+            observacoes="Treino gerado pelo motor IA FitControl Pro.",
             alerta_medico=plano.get("alerta_medico"),
             status="ativo",
         )
+
         TreinoRepository.add(treino)
 
         for ex in plano["exercicios"]:
@@ -96,16 +121,17 @@ class TreinoService:
                 series=ex["series"],
                 repeticoes=ex["repeticoes"],
                 descanso=ex["descanso"],
-                rpe=ex["rpe"],
-                rir=ex["rir"],
-                tempo_execucao=ex["tempo_execucao"],
-                semana=ex.get("semana", 1),
+                rpe=ex.get("rpe"),
+                rir=ex.get("rir"),
+                tempo_execucao=ex.get("tempo_execucao"),
+                semana=int(ex.get("semana") or 1),
                 dia_semana=ex["dia_semana"],
                 ordem=ex["ordem"],
                 tecnica=ex.get("tecnica"),
                 observacoes=ex.get("observacoes"),
             )
             ExercicioRepository.add(exercicio)
+
         return treino
 
     @staticmethod
@@ -122,6 +148,7 @@ class TreinoService:
             rir=data.get("rir"),
             tempo_execucao=data.get("tempo_execucao"),
             observacoes=sanitize_text(data.get("observacoes"), 2000),
+            semana=int(data.get("semana") or 1),
             dia_semana=data.get("dia_semana") or "A",
             ordem=int(data.get("ordem") or 1),
             tecnica=data.get("tecnica"),
@@ -140,6 +167,7 @@ class TreinoService:
         exercicio.rir = data.get("rir")
         exercicio.tempo_execucao = data.get("tempo_execucao")
         exercicio.observacoes = sanitize_text(data.get("observacoes"), 2000)
+        exercicio.semana = int(data.get("semana") or exercicio.semana or 1)
         exercicio.dia_semana = data.get("dia_semana") or exercicio.dia_semana
         exercicio.ordem = int(data.get("ordem") or exercicio.ordem)
         exercicio.tecnica = data.get("tecnica") or exercicio.tecnica

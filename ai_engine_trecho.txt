@@ -1,0 +1,61 @@
+        rng = random.Random(hash((aluno.id if aluno else 0, divisao, objetivo, nivel)))
+        rng.shuffle(exercicios_resultado)
+        # Re-sort by dia + ordem after shuffle for stable presentation
+        exercicios_resultado.sort(key=lambda e: (e["dia_semana"], e["ordem"]))
+
+        progressao = AIEngine._gerar_progressao(duracao_semanas, objetivo_cat)
+        recomendacoes = AIEngine._gerar_recomendacoes(aluno, protocolo, objetivo_cat)
+
+        ai_logger.info(
+            "AIEngine generated workout: aluno=%s objetivo=%s divisao=%s freq=%s exercicios=%s",
+            getattr(aluno, "id", None), objetivo, divisao, frequencia, len(exercicios_resultado),
+        )
+
+        return {
+            "exercicios": exercicios_resultado,
+            "progressao": progressao,
+            "recomendacoes": recomendacoes,
+            "alerta_medico": protocolo.alerta_medico if protocolo else None,
+            "categoria_objetivo": objetivo_cat,
+            "regras_aplicadas": rules,
+        }
+
+    @staticmethod
+    def _gerar_progressao(duracao_semanas: int, categoria: str) -> list[dict]:
+        progressao: list[dict] = []
+        for semana in range(1, duracao_semanas + 1):
+            if categoria == "forca":
+                if semana <= 2:
+                    foco, ajuste = "AcumulaÇõÇœo", "+0% carga"
+                elif semana <= 5:
+                    foco, ajuste = "IntensificaÇõÇœo", "+5% carga, -1 rep"
+                elif semana <= 7:
+                    foco, ajuste = "Pico", "+7-10% carga, sÇ¸ries de 3 reps"
+                else:
+                    foco, ajuste = "Deload", "-30% volume"
+            elif categoria == "hipertrofia":
+                if semana <= 3:
+                    foco, ajuste = "Volume base", "manter carga, +1 rep alvo"
+                elif semana <= 6:
+                    foco, ajuste = "Sobrecarga", "+2.5-5% carga"
+                elif semana == 7:
+                    foco, ajuste = "Pico", "+5% carga, 1 sÇ¸rie a mais"
+                else:
+                    foco, ajuste = "Deload", "-20% volume"
+            elif categoria == "emagrecimento":
+                foco = "Densidade metabÇülica"
+                ajuste = "-5s descanso a cada 2 semanas atÇ¸ 30s"
+            elif categoria == "especial":
+                foco = "AdaptaÇõÇœo progressiva"
+                ajuste = "Aumentar 1 sÇ¸rie apenas se RPE ƒ%Ï alvo"
+            else:
+                foco = "ProgressÇœo dupla"
+                ajuste = "Subir carga ao atingir teto de reps em todas as sÇ¸ries"
+            progressao.append({"semana": semana, "foco": foco, "ajuste": ajuste})
+        return progressao
+
+    @staticmethod
+    def _gerar_recomendacoes(aluno, protocolo: Optional[ProtocoloDef], categoria: str) -> list[str]:
+        recs = [
+            "Aquecimento de 5-8 minutos articular antes da sessÇœo.",
+            "HidrataÇõÇœo contÇğnua (250-500ml a cada 20 min de treino).",

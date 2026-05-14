@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do treino{% endblock %}
+{% block breadcrumb %}Treinos · Detalhes{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ treino.nome }}</h1>
+    <div class="subtitle">
+      Aluno: {{ aluno.nome }} · Objetivo: {{ treino.objetivo or "Não informado" }}
+    </div>
+  </div>
+
+  <div class="page-actions">
+    <a class="btn btn-ghost" href="{{ url_for('treinos.index') }}">Voltar</a>
+
+    <a class="btn btn-primary" href="{{ url_for('treinos.excel', treino_id=treino.id) }}">
+      Exportar ficha profissional
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Informações do treino</h3>
+  </div>
+
+  <div class="card-body">
+    <div class="form-grid">
+      <div><strong>Aluno:</strong><br>{{ aluno.nome }}</div>
+      <div><strong>Objetivo:</strong><br>{{ treino.objetivo or "-" }}</div>
+      <div><strong>Divisão:</strong><br>{{ treino.divisao or "-" }}</div>
+      <div><strong>Nível:</strong><br>{{ treino.nivel or "-" }}</div>
+      <div><strong>Frequência semanal:</strong><br>{{ treino.frequencia_semanal or "-" }}x semana</div>
+      <div><strong>Duração:</strong><br>{{ treino.duracao_semanas or "-" }} semanas</div>
+      <div><strong>Protocolo:</strong><br>{{ treino.protocolo_origem or "-" }}</div>
+      <div><strong>Status:</strong><br>{{ treino.status or "-" }}</div>
+    </div>
+  </div>
+</div>
+
+{% if treino.alerta_medico %}
+<div class="card mt-4">
+  <div class="card-body">
+    <strong>Alerta clínico:</strong>
+    {{ treino.alerta_medico }}
+  </div>
+</div>
+{% endif %}
+
+<div class="card mt-4">
+  <div class="card-header">
+    <h3 class="card-title">Planejamento por semana</h3>
+  </div>
+
+  <div class="card-body">
+    {% if exercicios_por_semana %}
+      {% for semana, dias in exercicios_por_semana.items() %}
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title">{{ semana }}</h3>
+          </div>
+
+          <div class="card-body">
+            {% for dia, exercicios in dias.items() %}
+              <div class="mb-4">
+                <h3>Dia {{ dia }}</h3>
+
+                {% if exercicios %}
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Exercício</th>
+                          <th>Grupo</th>
+                          <th>Séries</th>
+                          <th>Repetições</th>
+                          <th>Carga</th>
+                          <th>Descanso</th>
+                          <th>RPE/RIR</th>
+                          <th>Técnica</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {% for ex in exercicios %}
+                          <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ ex.nome }}</td>
+                            <td>{{ ex.grupo_muscular or "-" }}</td>
+                            <td>{{ ex.series or "-" }}</td>
+                            <td>{{ ex.repeticoes or "-" }}</td>
+                            <td>{{ ex.carga or "-" }}</td>
+                            <td>{{ ex.descanso or "-" }}</td>
+                            <td>RPE {{ ex.rpe or "-" }} / RIR {{ ex.rir or "-" }}</td>
+                            <td>{{ ex.tecnica or "-" }}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% else %}
+                  <p class="text-muted">Nenhum exercício cadastrado para este dia.</p>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted">Nenhum exercício encontrado para este treino.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="form-actions mt-4">
+  <a class="btn btn-ghost" href="{{ url_for('treinos.index') }}">Voltar para treinos</a>
+
+  <a class="btn btn-primary" href="{{ url_for('treinos.excel', treino_id=treino.id) }}">
+    Exportar ficha profissional
+  </a>
+</div>
+
+{% endblock %}

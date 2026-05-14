@@ -63,7 +63,7 @@
 
     <div class="card">
       <div class="card-header"><h3 class="card-title">Evolução</h3>
-        <a class="btn btn-ghost btn-sm" href="{{ url_for('avaliacoes.comparativo', aluno_id=aluno.id) }}">Comparativo</a>
+        <a class="btn btn-ghost btn-sm" href="{{ url_for('avaliacoes.index') }}">Comparativo</a>
       </div>
       <div class="card-body">
         <div class="chart-canvas-wrap"><canvas data-evolucao-chart="{{ aluno.id }}"></canvas></div>

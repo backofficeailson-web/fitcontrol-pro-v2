@@ -1,0 +1,298 @@
+"""Export services for FitControl Pro.
+
+Primary professional training export is Excel (.xlsx), avoiding native
+WeasyPrint/GTK dependency problems on Windows.
+"""
+from __future__ import annotations
+
+import logging
+from io import BytesIO
+
+from flask import render_template
+
+logger = logging.getLogger("fitcontrol.error")
+
+
+class PDFService:
+    @staticmethod
+    def _safe(value, default="-"):
+        if value is None:
+            return default
+        text = str(value).strip()
+        return text if text else default
+
+    @staticmethod
+    def _try_weasyprint(html: str, base_url: str) -> bytes | None:
+        try:
+            from weasyprint import HTML
+
+            return HTML(string=html, base_url=base_url).write_pdf()
+        except Exception as exc:
+            logger.warning("WeasyPrint indisponível: %s", exc)
+            return None
+
+    @staticmethod
+    def treino_excel(treino, aluno) -> bytes:
+        import openpyxl
+        from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+        from openpyxl.utils import get_column_letter
+
+        DARK_BLUE = "071A2F"
+        LIGHT_BLUE = "BAE6FD"
+        WHITE = "FFFFFF"
+        HEADER_BG = "0F172A"
+        ROW_ALT_BG = "F8FAFC"
+        LIGHT_GRAY_BG = "F9FAFB"
+        BORDER_COLOR = "CBD5E1"
+        ALERT_BG = "FEF3C7"
+        ALERT_BORDER = "F59E0B"
+
+        title_font = Font(name="Arial", bold=True, size=22, color=WHITE)
+        brand_font = Font(name="Arial", size=9, color=LIGHT_BLUE)
+        subtitle_font = Font(name="Arial", size=10, color=WHITE)
+        normal_font = Font(name="Arial", size=9, color="111827")
+        label_font = Font(name="Arial", bold=True, size=9, color="0F172A")
+        small_font = Font(name="Arial", size=8, color="374151")
+        header_font = Font(name="Arial", bold=True, size=8, color=WHITE)
+        footer_font = Font(name="Arial", size=8, color="6B7280")
+
+        dark_fill = PatternFill(start_color=DARK_BLUE, end_color=DARK_BLUE, fill_type="solid")
+        header_fill = PatternFill(start_color=HEADER_BG, end_color=HEADER_BG, fill_type="solid")
+        alt_fill = PatternFill(start_color=ROW_ALT_BG, end_color=ROW_ALT_BG, fill_type="solid")
+        light_fill = PatternFill(start_color=LIGHT_GRAY_BG, end_color=LIGHT_GRAY_BG, fill_type="solid")
+        alert_fill = PatternFill(start_color=ALERT_BG, end_color=ALERT_BG, fill_type="solid")
+
+        thin_border = Border(
+            left=Side(style="thin", color=BORDER_COLOR),
+            right=Side(style="thin", color=BORDER_COLOR),
+            top=Side(style="thin", color=BORDER_COLOR),
+            bottom=Side(style="thin", color=BORDER_COLOR),
+        )
+
+        left = Alignment(horizontal="left", vertical="top", wrap_text=True)
+        center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+        safe = PDFService._safe
+
+        try:
+            freq = int(getattr(treino, "frequencia_semanal", None) or 1)
+        except (TypeError, ValueError):
+            freq = 1
+
+        freq = max(freq, 1)
+
+        semanas = treino.exercicios_por_semana() or {}
+
+        wb = openpyxl.Workbook()
+        wb.remove(wb.active)
+
+        ws = wb.create_sheet("Capa", 0)
+        ws.column_dimensions["A"].width = 28
+        ws.column_dimensions["B"].width = 28
+        ws.column_dimensions["C"].width = 28
+
+        ws.merge_cells("A1:C1")
+        ws["A1"] = "FITCONTROL PRO"
+        ws["A1"].font = title_font
+        ws["A1"].fill = dark_fill
+        ws["A1"].alignment = left
+        ws.row_dimensions[1].height = 38
+
+        ws.merge_cells("A2:C2")
+        ws["A2"] = "since 2018 Ailson Soares"
+        ws["A2"].font = brand_font
+        ws["A2"].fill = dark_fill
+        ws["A2"].alignment = left
+
+        ws.merge_cells("A3:C3")
+        ws["A3"] = "Plano de Treino Personalizado"
+        ws["A3"].font = subtitle_font
+        ws["A3"].fill = dark_fill
+        ws["A3"].alignment = left
+
+        ws.merge_cells("A4:C4")
+        ws["A4"] = (
+            f"{safe(aluno.nome)} • {safe(treino.objetivo)} • "
+            f"{safe(treino.divisao)} • {safe(freq)}x semana • "
+            f"{safe(getattr(treino, 'duracao_semanas', None))} semanas"
+        )
+        ws["A4"].font = subtitle_font
+        ws["A4"].fill = dark_fill
+        ws["A4"].alignment = left
+
+        info = [
+            ["Aluno", "Objetivo", "Divisão"],
+            [safe(aluno.nome), safe(treino.objetivo), safe(treino.divisao)],
+            ["Nível", "Frequência", "Duração"],
+            [
+                safe(treino.nivel),
+                f"{safe(freq)}x semana",
+                f"{safe(getattr(treino, 'duracao_semanas', None))} semanas",
+            ],
+        ]
+
+        start = 6
+
+        for row_idx, row_data in enumerate(info, start=start):
+            for col_idx, value in enumerate(row_data, start=1):
+                cell = ws.cell(row=row_idx, column=col_idx)
+                cell.value = value
+                cell.alignment = left
+                cell.border = thin_border
+                cell.fill = light_fill
+                cell.font = label_font if (row_idx - start) % 2 == 0 else normal_font
+                ws.row_dimensions[row_idx].height = 24
+
+        alert_row = start + len(info) + 2
+        if getattr(treino, "protocolo_origem", None):
+            ws.merge_cells(start_row=alert_row, start_column=1, end_row=alert_row, end_column=3)
+            cell = ws.cell(row=alert_row, column=1)
+            cell.value = "⚠ Alerta clínico: treino exige acompanhamento profissional conforme protocolo selecionado."
+            cell.font = Font(name="Arial", bold=True, size=9, color="92400E")
+            cell.fill = alert_fill
+            cell.alignment = left
+            cell.border = Border(
+                left=Side(style="medium", color=ALERT_BORDER),
+                right=Side(style="medium", color=ALERT_BORDER),
+                top=Side(style="medium", color=ALERT_BORDER),
+                bottom=Side(style="medium", color=ALERT_BORDER),
+            )
+
+        if not semanas:
+            ws = wb.create_sheet("Semana 1")
+            ws["A1"] = "Nenhum exercício encontrado para este treino."
+            ws["A1"].font = normal_font
+        else:
+            for semana, dias in semanas.items():
+                ws = wb.create_sheet(semana[:31])
+
+                widths = [6, 34, 18, 10, 12, 14, 18, 32]
+                for index, width in enumerate(widths, start=1):
+                    ws.column_dimensions[get_column_letter(index)].width = width
+
+                row = 1
+
+                ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=8)
+                title = ws.cell(row=row, column=1)
+                title.value = f"{semana} • {safe(aluno.nome)}"
+                title.font = Font(name="Arial", bold=True, size=16, color="0F172A")
+                title.alignment = left
+                ws.row_dimensions[row].height = 28
+                row += 2
+
+                for dia, exercicios in dias.items():
+                    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=8)
+                    cell = ws.cell(row=row, column=1)
+                    cell.value = f"Dia {safe(dia)}"
+                    cell.font = Font(name="Arial", bold=True, size=13, color="0F172A")
+                    cell.alignment = left
+                    ws.row_dimensions[row].height = 24
+                    row += 1
+
+                    headers = [
+                        "#",
+                        "Exercício",
+                        "Grupo",
+                        "Séries",
+                        "Reps",
+                        "Descanso",
+                        "RPE/RIR",
+                        "Observações",
+                    ]
+
+                    for col, header in enumerate(headers, start=1):
+                        cell = ws.cell(row=row, column=col)
+                        cell.value = header
+                        cell.font = header_font
+                        cell.fill = header_fill
+                        cell.alignment = center
+                        cell.border = thin_border
+
+                    ws.row_dimensions[row].height = 22
+                    row += 1
+
+                    for idx, ex in enumerate(exercicios, start=1):
+                        values = [
+                            idx,
+                            safe(getattr(ex, "nome", None)),
+                            safe(getattr(ex, "grupo_muscular", None)),
+                            safe(getattr(ex, "series", None)),
+                            safe(getattr(ex, "repeticoes", None)),
+                            safe(getattr(ex, "descanso", None)),
+                            f"RPE {safe(getattr(ex, 'rpe', None))}\nRIR {safe(getattr(ex, 'rir', None))}",
+                            safe(getattr(ex, "observacoes", None), ""),
+                        ]
+
+                        for col, value in enumerate(values, start=1):
+                            cell = ws.cell(row=row, column=col)
+                            cell.value = value
+                            cell.font = small_font
+                            cell.alignment = left if col in (2, 7, 8) else center
+                            cell.border = thin_border
+
+                            if idx % 2 == 0:
+                                cell.fill = alt_fill
+
+                        ws.row_dimensions[row].height = 32
+                        row += 1
+
+                    row += 2
+
+                ws.freeze_panes = "A3"
+
+        ws = wb.create_sheet("Notas")
+        ws.column_dimensions["A"].width = 95
+        ws["A1"] = "FitControl Pro 2.0 • since 2018 Ailson Soares • Plano de treino confidencial"
+        ws["A1"].font = footer_font
+        ws["A1"].alignment = center
+
+        buffer = BytesIO()
+        wb.save(buffer)
+        buffer.seek(0)
+        return buffer.getvalue()
+
+    @staticmethod
+    def treino_pdf(treino, aluno, base_url: str) -> bytes:
+        # Kept only for backward compatibility. In Windows/local use, routes
+        # redirect PDF export to Excel to avoid invalid PDF fallback.
+        html = render_template(
+            "pdf/treino_pdf.html",
+            treino=treino,
+            aluno=aluno,
+            exercicios_por_dia=treino.exercicios_por_dia(),
+        )
+
+        pdf = PDFService._try_weasyprint(html, base_url)
+        if pdf:
+            return pdf
+
+        return PDFService.treino_excel(treino, aluno)
+
+    @staticmethod
+    def avaliacao_pdf(avaliacao, aluno, base_url: str) -> bytes:
+        html = render_template(
+            "pdf/avaliacao_pdf.html",
+            avaliacao=avaliacao,
+            aluno=aluno,
+        )
+
+        pdf = PDFService._try_weasyprint(html, base_url)
+        if pdf:
+            return pdf
+
+        return b"PDF indisponivel neste ambiente."
+
+    @staticmethod
+    def aluno_completo_pdf(aluno, avaliacoes, treinos, base_url: str) -> bytes:
+        html = render_template(
+            "pdf/aluno_completo_pdf.html",
+            aluno=aluno,
+            avaliacoes=avaliacoes,
+            treinos=treinos,
+        )
+
+        pdf = PDFService._try_weasyprint(html, base_url)
+        if pdf:
+            return pdf
+
+        return b"PDF indisponivel neste ambiente."

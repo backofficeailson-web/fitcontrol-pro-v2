@@ -1,4 +1,3 @@
-"""Treino business logic service."""
 from datetime import datetime, UTC
 
 from models.treino import Treino
@@ -24,7 +23,7 @@ class TreinoService:
         treino = Treino(
             user_id=user_id,
             aluno_id=aluno_id,
-            nome=sanitize_text(data.get("nome"), 160) or "Treino sem tÃ­tulo",
+            nome=sanitize_text(data.get("nome"), 160) or "Treino sem tÇðtulo",
             objetivo=data.get("objetivo") or "hipertrofia",
             modalidade=data.get("modalidade") or "musculacao",
             fase=data.get("fase") or "adaptacao",
@@ -99,7 +98,6 @@ class TreinoService:
                 rpe=ex["rpe"],
                 rir=ex["rir"],
                 tempo_execucao=ex["tempo_execucao"],
-                semana=ex.get("semana", 1),
                 dia_semana=ex["dia_semana"],
                 ordem=ex["ordem"],
                 tecnica=ex.get("tecnica"),
@@ -112,7 +110,7 @@ class TreinoService:
     def add_exercicio(treino: Treino, data: dict) -> Exercicio:
         exercicio = Exercicio(
             treino_id=treino.id,
-            nome=sanitize_text(data.get("nome"), 160) or "ExercÃ­cio",
+            nome=sanitize_text(data.get("nome"), 160) or "ExercÇðcio",
             grupo_muscular=data.get("grupo_muscular") or "geral",
             series=int(data.get("series") or 3),
             repeticoes=data.get("repeticoes") or "10-12",
