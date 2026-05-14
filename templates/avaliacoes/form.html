@@ -1,73 +1,201 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Editar' if avaliacao else 'Nova' }} avaliação{% endblock %}
-{% block breadcrumb %}Avaliações · {{ 'Editar' if avaliacao else 'Nova' }}{% endblock %}
+
+{% block title %}
+Nova Avaliação
+{% endblock %}
+
+{% block breadcrumb %}
+Avaliações
+{% endblock %}
+
 {% block content %}
 
 <div class="page-header">
   <div>
-    <h1>{{ 'Editar avaliação' if avaliacao else 'Nova avaliação' }}</h1>
-    <div class="subtitle">Os campos são calculados automaticamente conforme o protocolo escolhido.</div>
+    <h1>
+      {% if avaliacao %}
+        Editar avaliação
+      {% else %}
+        Nova avaliação
+      {% endif %}
+    </h1>
+
+    <div class="subtitle">
+      Os campos são calculados automaticamente conforme o protocolo escolhido.
+    </div>
   </div>
 </div>
 
-<form method="POST" class="card" novalidate>
-  {{ form.hidden_tag() }}
+<form method="POST">
 
-  <div class="form-grid-3">
-    <div class="form-group">
-      <label class="form-label">Aluno</label>
-      {% if aluno %}
-        <input class="form-control" value="{{ aluno.nome }}" disabled />
-        {{ form.aluno_id() }}
-      {% else %}
-        <select class="form-select" name="aluno_id" required>
-          <option value="">Selecione um aluno...</option>
-          {% for a in alunos %}<option value="{{ a.id }}">{{ a.nome }}</option>{% endfor %}
-        </select>
-      {% endif %}
+  {{ form.csrf_token }}
+
+  <div class="card">
+    <div class="card-body">
+
+      <div class="form-grid">
+
+        <!-- ALUNO -->
+        <div class="form-group">
+          <label class="form-label">Aluno</label>
+
+          {% if aluno %}
+            <input
+              class="form-control"
+              value="{{ aluno.nome }}"
+              disabled
+            >
+
+            <input
+              type="hidden"
+              name="aluno_id"
+              value="{{ aluno.id }}"
+            >
+
+          {% else %}
+
+            <select
+              class="form-select"
+              name="aluno_id"
+              id="aluno_id"
+              required
+            >
+              <option value="">
+                Selecione um aluno...
+              </option>
+
+              {% for a in alunos %}
+                <option
+                  value="{{ a.id }}"
+                  {% if form.aluno_id.data|string == a.id|string %}
+                    selected
+                  {% endif %}
+                >
+                  {{ a.nome }}
+                </option>
+              {% endfor %}
+
+            </select>
+
+          {% endif %}
+        </div>
+
+        <!-- DATA -->
+        <div class="form-group">
+          <label class="form-label">
+            Data da avaliação
+          </label>
+
+          {{ form.data(class="form-control") }}
+        </div>
+
+        <!-- PROTOCOLO -->
+        <div class="form-group">
+          <label class="form-label">
+            Protocolo de avaliação
+          </label>
+
+          {{ form.protocolo(class="form-select") }}
+        </div>
+
+      </div>
+
+      <h2 class="section-title mt-5">
+        Antropometria
+      </h2>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="form-label">
+            Peso (kg)
+          </label>
+
+          {{ form.peso(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Altura (cm)
+          </label>
+
+          {{ form.altura(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Cintura (cm)
+          </label>
+
+          {{ form.cintura(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Quadril (cm)
+          </label>
+
+          {{ form.quadril(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Peito (cm)
+          </label>
+
+          {{ form.peito(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Braço (cm)
+          </label>
+
+          {{ form.braco(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Coxa (cm)
+          </label>
+
+          {{ form.coxa(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Panturrilha (cm)
+          </label>
+
+          {{ form.panturrilha(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Abdômen (cm)
+          </label>
+
+          {{ form.abdomen(class="form-control") }}
+        </div>
+
+      </div>
+
+      <div class="form-actions mt-5">
+
+        <a
+          href="{{ url_for('avaliacoes.index') }}"
+          class="btn btn-ghost"
+        >
+          Cancelar
+        </a>
+
+        {{ form.submit(class="btn btn-primary") }}
+
+      </div>
+
     </div>
-    <div class="form-group">
-      <label class="form-label">{{ form.data.label.text }}</label>
-      {{ form.data(class="form-control") }}
-    </div>
-    <div class="form-group">
-      <label class="form-label">{{ form.protocolo.label.text }}</label>
-      {{ form.protocolo(class="form-select") }}
-    </div>
   </div>
 
-  <h3 class="mt-4 mb-3">Antropometria</h3>
-  <div class="form-grid-3">
-    <div class="form-group"><label class="form-label">{{ form.peso.label.text }}</label>{{ form.peso(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.altura.label.text }}</label>{{ form.altura(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.cintura.label.text }}</label>{{ form.cintura(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.quadril.label.text }}</label>{{ form.quadril(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.peito.label.text }}</label>{{ form.peito(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.braco.label.text }}</label>{{ form.braco(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.coxa.label.text }}</label>{{ form.coxa(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.panturrilha.label.text }}</label>{{ form.panturrilha(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.abdomen.label.text }}</label>{{ form.abdomen(class="form-control", step="0.1") }}</div>
-  </div>
-
-  <h3 class="mt-4 mb-3">Dobras cutâneas (mm)</h3>
-  <div class="form-grid-3">
-    <div class="form-group"><label class="form-label">{{ form.dobra_triceps.label.text }}</label>{{ form.dobra_triceps(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.dobra_peitoral.label.text }}</label>{{ form.dobra_peitoral(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.dobra_subaxilar.label.text }}</label>{{ form.dobra_subaxilar(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.dobra_subescapular.label.text }}</label>{{ form.dobra_subescapular(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.dobra_abdominal.label.text }}</label>{{ form.dobra_abdominal(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.dobra_suprailiaca.label.text }}</label>{{ form.dobra_suprailiaca(class="form-control", step="0.1") }}</div>
-    <div class="form-group"><label class="form-label">{{ form.dobra_coxa.label.text }}</label>{{ form.dobra_coxa(class="form-control", step="0.1") }}</div>
-  </div>
-
-  <div class="form-group mt-4">
-    <label class="form-label">{{ form.observacoes.label.text }}</label>
-    {{ form.observacoes(class="form-textarea", rows=4) }}
-  </div>
-
-  <div class="form-actions">
-    <a class="btn btn-ghost" href="{{ url_for('avaliacoes.index') }}">Cancelar</a>
-    {{ form.submit(class="btn btn-primary") }}
-  </div>
 </form>
+
 {% endblock %}

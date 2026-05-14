@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Editar protocolo{% endblock %}
+{% block breadcrumb %}Protocolos · Editar{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Editar protocolo</h1>
+    <div class="subtitle">Atualize as informações do protocolo aplicado.</div>
+  </div>
+</div>
+
+<form method="POST" class="card p-4">
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input
+      type="text"
+      name="nome"
+      class="form-control"
+      value="{{ protocolo.nome or '' }}"
+      required
+    >
+  </div>
+
+  <div class="form-group mt-3">
+    <label class="form-label">Descrição</label>
+    <textarea
+      name="descricao"
+      class="form-control"
+      rows="5"
+    >{{ protocolo.descricao or '' }}</textarea>
+  </div>
+
+  <div class="form-group mt-3">
+    <label class="form-label">Payload / dados técnicos</label>
+    <textarea
+      name="payload"
+      class="form-control"
+      rows="10"
+      placeholder="Exemplo: massa magra, percentual de gordura, observações técnicas, parâmetros do protocolo..."
+    >{{ protocolo.payload or '' }}</textarea>
+  </div>
+
+  <div class="form-actions mt-4">
+    <a class="btn btn-ghost" href="{{ url_for('protocolos.index') }}">
+      Cancelar
+    </a>
+
+    <button class="btn btn-primary" type="submit">
+      Salvar alterações
+    </button>
+  </div>
+</form>
+{% endblock %}

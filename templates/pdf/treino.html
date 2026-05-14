@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    font-size:12px;
+    color:#111;
+    margin:30px;
+}
+
+h1{
+    font-size:24px;
+    margin-bottom:5px;
+}
+
+h2{
+    margin-top:30px;
+    border-bottom:1px solid #ccc;
+    padding-bottom:5px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+table th,
+table td{
+    border:1px solid #ccc;
+    padding:8px;
+    text-align:left;
+}
+
+.header{
+    margin-bottom:30px;
+}
+
+.meta{
+    margin-top:10px;
+    line-height:1.7;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+    <h1>{{ treino.nome }}</h1>
+
+    <div class="meta">
+        <strong>Aluno:</strong> {{ aluno.nome }}<br>
+        <strong>Objetivo:</strong> {{ treino.objetivo }}<br>
+        <strong>Divisão:</strong> {{ treino.divisao }}<br>
+        <strong>Nível:</strong> {{ treino.nivel }}<br>
+    </div>
+</div>
+
+{% for dia, exercicios in exercicios_por_dia.items() %}
+
+<h2>{{ dia }}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Exercício</th>
+            <th>Séries</th>
+            <th>Repetições</th>
+            <th>Descanso</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for ex in exercicios %}
+        <tr>
+            <td>{{ ex.nome }}</td>
+            <td>{{ ex.series }}</td>
+            <td>{{ ex.repeticoes }}</td>
+            <td>{{ ex.descanso }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+{% endfor %}
+
+</body>
+</html>
